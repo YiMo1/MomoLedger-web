@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs'
+
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -5,6 +7,20 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
+
+function optimizeVant() {
+  const includes = readdirSync('node_modules/vant/es').filter((item) => ![
+    'style',
+    'vue-tsx-shim.d.ts',
+    'vue-sfc-shim.d.ts',
+    'utils',
+    'index.d.ts',
+    'index.mjs',
+    'composables',
+  ].includes(item)).
+    map((item) => `vant/es/${item}/style/index`)
+  return ['vant/es', ...includes]
+}
 
 export default defineConfig({
   plugins: [
@@ -24,4 +40,5 @@ export default defineConfig({
       plugins: [tailwindcss, autoprefixer],
     },
   },
+  optimizeDeps: { include: [...optimizeVant()] },
 })

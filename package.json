@@ -7,6 +7,7 @@
     "lint": "eslint --fix ."
   },
   "dependencies": {
+    "@types/node": "^22.13.16",
     "@vant/auto-import-resolver": "^1.3.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
