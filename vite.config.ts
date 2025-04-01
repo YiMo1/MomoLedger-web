@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
   plugins: [
@@ -20,7 +21,7 @@ export default defineConfig({
   ],
   css: {
     postcss: {
-      plugins: [tailwindcss],
+      plugins: [tailwindcss, autoprefixer],
     },
   },
 })
