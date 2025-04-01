@@ -20,6 +20,7 @@
     "unplugin-vue-components": "^28.4.1",
     "vant": "^4.9.18",
     "vite": "^6.2.0",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "vue-tsc": "^2.2.4"
