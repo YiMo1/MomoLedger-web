@@ -10,7 +10,7 @@ export default defineConfig({
     AutoImport({
       dts: './src/auto-imports.d.ts',
       resolvers: [VantResolver()],
-      imports: ['vue'],
+      imports: ['vue', 'vue-router'],
     }),
     Components({
       dts: './src/components.d.ts',
