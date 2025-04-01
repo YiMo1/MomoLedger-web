@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build"
+    "build": "vue-tsc -b && vite build",
+    "lint": "eslint --fix ."
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
