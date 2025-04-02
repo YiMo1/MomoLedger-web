@@ -43,4 +43,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: { include: [...optimizeVant()] },
+  server: {
+    host: true,
+  },
 })
