@@ -29,7 +29,7 @@ export default defineConfig({
     AutoImport({
       dts: './src/auto-imports.d.ts',
       resolvers: [VantResolver()],
-      imports: ['vue', 'vue-router'],
+      imports: ['vue', 'vue-router', 'pinia'],
     }),
     Components({
       dts: './src/components.d.ts',
