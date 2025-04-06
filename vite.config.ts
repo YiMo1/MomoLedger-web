@@ -1,4 +1,5 @@
 import { readdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -45,5 +46,10 @@ export default defineConfig({
   optimizeDeps: { include: [...optimizeVant()] },
   server: {
     host: true,
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src/'),
+    },
   },
 })
