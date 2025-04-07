@@ -20,6 +20,7 @@ const totalDebt = computed(() => creditAccount.value.reduce((sum, item) => {
   return sum
 }, 0))
 
+const SECRET_TEXT = '****'
 const secret = ref(false)
 const show = ref(false)
 const actions = [
@@ -31,11 +32,11 @@ const actions = [
 <template>
   <div class="h-screen pb-[var(--van-tabbar-height)]">
     <div class="relative h-full p-4">
-      <header-comp v-model:secret="secret" />
+      <header-comp v-model:secret="secret" :secret-text="SECRET_TEXT" />
       <div v-if="assetsAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
           <div>资产账户</div>
-          <div>{{ (totalAssets / 100).toFixed(2) }}</div>
+          <div>{{ secret ? SECRET_TEXT : (totalAssets / 100).toFixed(2) }}</div>
         </div>
         <div v-for="item in assetsAccount" :key="item.id" class="flex justify-between p-4">
           <div>{{ item.name }}</div>
@@ -46,14 +47,14 @@ const actions = [
                 : item.balance < 0 ? 'text-red-500' : 'text-black',
             ]"
           >
-            {{ (item.balance / 100).toFixed(2) }}
+            {{ secret ? SECRET_TEXT : (item.balance / 100).toFixed(2) }}
           </div>
         </div>
       </div>
       <div v-if="creditAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
           <div>信贷账户</div>
-          <div>{{ (totalDebt / 100).toFixed(2) }}</div>
+          <div>{{ secret ? SECRET_TEXT : (totalDebt / 100).toFixed(2) }}</div>
         </div>
         <div v-for="item in creditAccount" :key="item.id" class="flex justify-between p-4">
           <div>{{ item.name }}</div>
@@ -64,7 +65,7 @@ const actions = [
                 : item.balance < 0 ? 'text-red-500' : 'text-black',
             ]"
           >
-            {{ (item.balance / 100).toFixed(2) }}
+            {{ secret ? SECRET_TEXT : (item.balance / 100).toFixed(2) }}
           </div>
         </div>
       </div>

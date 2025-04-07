@@ -5,6 +5,7 @@ const router = useRouter()
 const route = useRoute()
 const accountStore = useAccountStore()
 
+// eslint-disable-next-line stylistic/no-confusing-arrow
 const type = computed(() => route.query.accountType === '信贷账户' ? 'credit' : 'assets')
 const title = computed(() => {
   switch (type.value) {

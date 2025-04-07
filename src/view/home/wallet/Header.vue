@@ -4,10 +4,10 @@ import CloseEyeIcon from '@/assets/icon/眼睛_闭.svg?component'
 import { useAccountStore } from '@/store/account.ts'
 
 const secret = defineModel('secret', { type: Boolean })
+defineProps<{ secretText: string }>()
 
 const { account } = storeToRefs(useAccountStore())
 
-const SECRET_TEXT = '****'
 const assets = computed(() => account.value.reduce((pre, cur) => {
   pre.net += cur.balance
   if (cur.type === 'assets') { pre.total += cur.balance }
@@ -26,19 +26,19 @@ const show = ref(false)
         <close-eye-icon v-else class="size-5 fill-gray-600" @click="secret = !secret" />
       </div>
       <div class="mt-5 text-xl font-bold text-emerald-500">
-        {{ secret ? SECRET_TEXT : (assets.net / 100).toFixed(2) }}
+        {{ secret ? secretText : (assets.net / 100).toFixed(2) }}
       </div>
     </div>
     <div class="flex-1">
       <div>
         <span class="mr-3 text-sm text-gray-600">总资产</span>
         <span class="font-bold text-gray-700">
-          {{ secret ? SECRET_TEXT : (assets.total / 100).toFixed(2) }}</span>
+          {{ secret ? secretText : (assets.total / 100).toFixed(2) }}</span>
       </div>
       <div class="mt-5">
         <span class="mr-3 text-sm text-gray-600">负资产</span>
         <span class="font-bold text-gray-700">
-          {{ secret ? SECRET_TEXT : (assets.negative / 100).toFixed(2) }}</span>
+          {{ secret ? secretText : (assets.negative / 100).toFixed(2) }}</span>
       </div>
     </div>
     <van-icon
