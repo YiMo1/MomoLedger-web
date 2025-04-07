@@ -71,12 +71,12 @@ const actions = [
       </div>
       <div
         :class="[
-          'absolute bottom-6 right-5 flex size-12 items-center justify-center',
+          'absolute bottom-6 right-5 flex size-16 items-center justify-center',
           'rounded-full bg-emerald-600',
         ]"
         @click="show = true"
       >
-        <plus-icon class="size-8 fill-white" />
+        <plus-icon class="size-10 fill-white" />
       </div>
     </div>
   </div>
