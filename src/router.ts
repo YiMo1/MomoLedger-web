@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CreateAccount from './view/home/CreateAccount.vue'
+import CreateAccount from './view/CreateAccount.vue'
 import Home from './view/home/Index.vue'
 
 export default createRouter({
