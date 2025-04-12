@@ -5,7 +5,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "types": ["vite/client", "vite-svg-loader"],
+    "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"]
     }
