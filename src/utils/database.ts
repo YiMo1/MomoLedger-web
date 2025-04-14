@@ -1,4 +1,4 @@
-import { openDB as _openDB } from 'idb'
+import { type DBSchema, openDB as _openDB } from 'idb'
 
 export type Account = {
   id?: number
@@ -31,7 +31,7 @@ export type Database = {
   account: { key: Account['id']; value: Account }
   'ledger-record': { key: LedgerRecord['id']; value: LedgerRecord }
   category: { key: LedgerRecord['id']; value: Category }
-}
+} & DBSchema
 
 export function openDB() {
   return _openDB<Database>('momo-ledger', 1, {
