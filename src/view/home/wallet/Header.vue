@@ -6,12 +6,12 @@ import { useAccountStore } from '@/store/account.ts'
 const secret = defineModel('secret', { type: Boolean })
 defineProps<{ secretText: string }>()
 
-const { account } = storeToRefs(useAccountStore())
+const { list } = storeToRefs(useAccountStore())
 
-const assets = computed(() => account.value.reduce((pre, cur) => {
-  pre.net += cur.balance
-  if (cur.type === 'assets') { pre.total += cur.balance }
-  if (cur.type === 'credit') { pre.negative += cur.balance }
+const assets = computed(() => list.value.reduce((pre, cur) => {
+  pre.net += cur.balance ?? 0
+  if (cur.type === '资产') { pre.total += cur.balance ?? 0 }
+  if (cur.type === '信贷') { pre.negative += cur.balance ?? 0 }
   return pre
 }, { total: 0, negative: 0, net: 0 }))
 const show = ref(false)

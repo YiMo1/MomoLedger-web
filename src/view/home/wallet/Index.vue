@@ -7,16 +7,16 @@ import type { ActionSheetAction } from 'vant'
 
 const router = useRouter()
 
-const { account } = storeToRefs(useAccountStore())
+const { list } = storeToRefs(useAccountStore())
 
-const assetsAccount = computed(() => account.value.filter((item) => item.type === 'assets'))
-const creditAccount = computed(() => account.value.filter((item) => item.type === 'credit'))
+const assetsAccount = computed(() => list.value.filter((item) => item.type === '资产'))
+const creditAccount = computed(() => list.value.filter((item) => item.type === '信贷'))
 const totalAssets = computed(() => assetsAccount.value.reduce((sum, item) => {
-  sum += item.balance
+  sum += item.balance ?? 0
   return sum
 }, 0))
 const totalDebt = computed(() => creditAccount.value.reduce((sum, item) => {
-  sum += item.balance
+  sum += item.balance ?? 0
   return sum
 }, 0))
 
@@ -42,12 +42,12 @@ const actions = [
           <div>{{ item.name }}</div>
           <div
             :class="[
-              item.balance > 0
+              item.balance! > 0
                 ? 'text-emerald-500'
-                : item.balance < 0 ? 'text-red-500' : 'text-black',
+                : item.balance! < 0 ? 'text-red-500' : 'text-black',
             ]"
           >
-            {{ secret ? SECRET_TEXT : (item.balance / 100).toFixed(2) }}
+            {{ secret ? SECRET_TEXT : (item.balance! / 100).toFixed(2) }}
           </div>
         </div>
       </div>
@@ -60,12 +60,12 @@ const actions = [
           <div>{{ item.name }}</div>
           <div
             :class="[
-              item.balance > 0
+              item.balance! > 0
                 ? 'text-emerald-500'
-                : item.balance < 0 ? 'text-red-500' : 'text-black',
+                : item.balance! < 0 ? 'text-red-500' : 'text-black',
             ]"
           >
-            {{ secret ? SECRET_TEXT : (item.balance / 100).toFixed(2) }}
+            {{ secret ? SECRET_TEXT : (item.balance! / 100).toFixed(2) }}
           </div>
         </div>
       </div>
