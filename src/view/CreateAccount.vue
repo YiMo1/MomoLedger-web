@@ -1,33 +1,38 @@
 <script setup lang="ts">
 import { useAccountStore } from '@/store/account.ts'
 
+import type { Account } from '../utils/database.ts'
+import type { FormInstance } from 'vant'
+
 const router = useRouter()
 const route = useRoute()
 const accountStore = useAccountStore()
 
-// eslint-disable-next-line stylistic/no-confusing-arrow
-const type = computed(() => route.query.accountType === '信贷账户' ? 'credit' : 'assets')
+const type = computed<NonNullable<Account['type']>>(() => route.query.accountType === '信贷账户'
+  ? '信贷'
+  : '资产')
 const title = computed(() => {
   switch (type.value) {
-    case 'assets': return '新增资产账户'
-    case 'credit': return '新增信贷账户'
+    case '资产': return '新增资产账户'
+    case '信贷': return '新增信贷账户'
     default: { const _: never = type.value }
   }
 })
-const LABEL_WIDTH = '2.6em'
 const name = ref('')
-const balance = ref('')
+const balance = ref<number>()
 const note = ref('')
-const limit = ref('')
+const limit = ref<number>()
 
+const formRel = ref<FormInstance>()
 async function createAccount() {
-  if (name.value === '') { showToast({ type: 'text', message: '请输入账户名称' }) }
+  try { await formRel.value?.validate() }
+  catch { return }
   await accountStore.createAccount({
     name: name.value,
-    balance: Math.round(Number(balance.value) * 100),
+    balance: Math.round((balance.value ?? 0) * 100),
     note: note.value,
     type: type.value,
-    limit: Math.round(Number(limit.value) * 100),
+    limit: Math.round((limit.value ?? 0) * 100),
   })
   router.back()
 }
@@ -41,30 +46,27 @@ async function createAccount() {
     @click-left="router.back()"
     @click-right="createAccount" />
   <div class="py-4">
-    <van-form>
+    <van-form ref="formRel" label-width="2.6em">
       <van-cell-group inset>
         <van-field
           v-model="name"
           label="名称"
-          :label-width="LABEL_WIDTH"
-          placeholder="请输入账户名称" />
+          placeholder="请输入账户名称"
+          :rules="[{ required: true, message: '请输入账户名称' }]" />
         <van-field
-          v-model="balance"
+          v-model.number="balance"
           label="余额"
           type="number"
-          :label-width="LABEL_WIDTH"
           placeholder="请输入账户余额" />
         <van-field
           v-model="note"
           label="备注"
-          :label-width="LABEL_WIDTH"
           placeholder="请输入账户备注" />
         <van-field
-          v-if="type === 'credit'"
-          v-model="limit"
+          v-if="type === '信贷'"
+          v-model.number="limit"
           label="额度"
           type="number"
-          :label-width="LABEL_WIDTH"
           placeholder="请输入账户额度" />
       </van-cell-group>
     </van-form>
