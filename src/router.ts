@@ -6,13 +6,7 @@ import Home from './view/home/Index.vue'
 export default createRouter({
   history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      component: Home,
-    },
-    {
-      path: '/create_account',
-      component: CreateAccount,
-    },
+    { path: '/', component: Home },
+    { path: '/create_account', component: CreateAccount },
   ],
 })

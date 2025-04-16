@@ -13,6 +13,7 @@
     "@vue/tsconfig": "^0.7.0",
     "@vueuse/core": "^13.0.0",
     "autoprefixer": "^10.4.21",
+    "dayjs": "^1.11.13",
     "eslint": "^9.23.0",
     "eslint-config-yimo": "^1.2.2",
     "idb": "^8.0.2",

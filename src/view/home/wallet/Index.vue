@@ -84,6 +84,7 @@ const actions = [
     v-model:show="show"
     :actions="actions"
     close-on-click-action
+    teleport="body"
     @select="(item) => router.push({
       path: '/create_account',
       query: { accountType: item.name },

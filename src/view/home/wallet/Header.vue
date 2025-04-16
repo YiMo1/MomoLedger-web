@@ -3,7 +3,7 @@ import EyeIcon from '@/assets/icon/眼睛.svg?component'
 import CloseEyeIcon from '@/assets/icon/眼睛_闭.svg?component'
 import { useAccountStore } from '@/store/account.ts'
 
-const secret = defineModel('secret', { type: Boolean })
+const secret = defineModel<boolean>('secret', { required: true })
 defineProps<{ secretText: string }>()
 
 const { list } = storeToRefs(useAccountStore())
