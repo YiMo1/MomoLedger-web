@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "pnpm check:ts && vite build",
+    "check:ts": "vue-tsc -b",
     "lint": "eslint --fix ."
   },
   "dependencies": {

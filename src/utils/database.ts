@@ -14,11 +14,12 @@ export type LedgerRecord = {
   expenses?: number
   note?: string
   statementDate?: number
-  account?: Account['id']
+  paymentAccount?: Account['id']
   createTime?: number
   discount?: number
   category?: Category['id']
   type?: '支出' | '收入' | '转账'
+  receivingAccount?: Account['id']
 }
 
 export type Category = {

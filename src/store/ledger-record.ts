@@ -9,8 +9,11 @@ import { useAccountStore } from './account.ts'
 
 const DB = await openDB()
 
-export type LedgerRecord = Omit<RawLedgerRecord, 'account' | 'category'> & {
-  account?: Account
+export type LedgerRecord = Omit<
+  RawLedgerRecord, 'paymentAccount' | 'category' | 'receivingAccount'
+> & {
+  paymentAccount?: Account
+  receivingAccount?: Account
   category?: Category
 }
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
@@ -21,7 +24,8 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
     return {
       ...item, category:
       category.value.get(item.category!),
-      account: account.value.get(item.account!),
+      paymentAccount: account.value.get(item.paymentAccount!),
+      receivingAccount: account.value.get(item.receivingAccount!),
     }
   }))
 
