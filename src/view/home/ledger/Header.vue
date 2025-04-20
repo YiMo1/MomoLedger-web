@@ -1,6 +1,14 @@
 <script setup lang="ts">
+import { useAccountStore } from '@/store/index.ts'
+
+const { list: account } = storeToRefs(useAccountStore())
+
+const netAssets = computed(() => account.value.reduce((sum, item) => {
+  sum += item.balance ?? 0
+  return sum
+}, 0))
+
 const r = ref({
-  netAssets: 2662256,
   expenditureForThisMonth: 89061,
   balanceForThisMonth: -83619,
   dailyAverageExpenditure: 11133,
@@ -31,7 +39,7 @@ const r = ref({
     </div>
     <div class="mt-3">
       <div>净资产</div>
-      <div class="text-lg font-bold text-emerald-500">{{ (r.netAssets / 100).toFixed(2) }}</div>
+      <div class="text-lg font-bold text-emerald-500">{{ (netAssets / 100).toFixed(2) }}</div>
     </div>
   </div>
 </template>
