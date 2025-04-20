@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import HeaderComp from './Header.vue'
+import { useAccountStore } from '@/store/account.ts'
+
+const { list } = storeToRefs(useAccountStore())
+const router = useRouter()
+
+function addNewRecord() {
+  if (list.value.length < 1) {
+    showFailToast('请先添加一个账户')
+    return
+  }
+  router.push('/create_record')
+}
 </script>
 
 <template>
@@ -11,7 +23,7 @@ import HeaderComp from './Header.vue'
         type="primary"
         icon="balance-list-o"
         class="mb-3 mt-4 border-emerald-500 bg-emerald-500"
-        @click="$router.push('/create_record')"
+        @click="addNewRecord"
       >
         添加一条新记账
       </van-button>
