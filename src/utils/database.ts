@@ -29,11 +29,11 @@ export type Category = {
   type?: '支出' | '收入'
 }
 
-export type Database = {
-  account: { key: Account['id']; value: Account }
-  'ledger-record': { key: LedgerRecord['id']; value: LedgerRecord }
-  category: { key: LedgerRecord['id']; value: Category }
-} & DBSchema
+export interface Database extends DBSchema {
+  account: { key: NonNullable<Account['id']>; value: Account }
+  'ledger-record': { key: NonNullable <LedgerRecord['id']>; value: LedgerRecord }
+  category: { key: NonNullable<LedgerRecord['id']>; value: Category }
+}
 
 export function openDB() {
   return _openDB<Database>('momo-ledger', 1, {

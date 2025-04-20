@@ -18,14 +18,14 @@ export type LedgerRecord = Omit<
 }
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
   const { map: category } = storeToRefs(useCategoryStore())
-  const { map: account } = storeToRefs(useAccountStore())
+  const { map: accountMap } = storeToRefs(useAccountStore())
   const rawList = ref<RawLedgerRecord[]>([])
   const list = computed(() => rawList.value.map<LedgerRecord>((item) => {
     return {
       ...item, category:
       category.value.get(item.category!),
-      paymentAccount: account.value.get(item.paymentAccount!),
-      receivingAccount: account.value.get(item.receivingAccount!),
+      paymentAccount: accountMap.value.get(item.paymentAccount!),
+      receivingAccount: accountMap.value.get(item.receivingAccount!),
     }
   }))
 
@@ -34,12 +34,24 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
   })
 
   async function createLedgerRecord(data: Omit<RawLedgerRecord, 'id'>) {
-    const id = await DB.add('ledger-record', data)
+    const promises: Promise<number>[] = []
+    const transaction = DB.transaction(['ledger-record', 'account'], 'readwrite')
+    promises.push(transaction.objectStore('ledger-record').add(data))
+    const paymentAccount = accountMap.value.get(data.paymentAccount!)!
+    paymentAccount.balance! -= data.expenses!
+    promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
+    if (data.type === '转账') {
+      const receivingAccount = accountMap.value.get(data.receivingAccount!)!
+      receivingAccount.balance! += data.expenses!
+      promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+    }
+    transaction.commit()
+    const [id] = await Promise.all(promises)
     rawList.value.push({ ...data, id })
     return id
   }
 
-  async function deleteLedgerRecord(id: RawLedgerRecord['id']) {
+  async function deleteLedgerRecord(id: NonNullable<RawLedgerRecord['id']>) {
     const index = rawList.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       rawList.value.splice(index, 1)
