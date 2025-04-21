@@ -70,7 +70,7 @@ async function create() {
     type: '收入',
     category: category.value.id,
     note: note.value,
-    paymentAccount: account.value.id,
+    receivingAccount: account.value.id,
     expenses: Math.round(expenses.value * 100),
     discount: discount.value && Math.round(discount.value * 100),
     createTime: Date.now(),

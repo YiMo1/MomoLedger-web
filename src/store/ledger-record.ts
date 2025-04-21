@@ -37,13 +37,30 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
     const promises: Promise<number>[] = []
     const transaction = DB.transaction(['ledger-record', 'account'], 'readwrite')
     promises.push(transaction.objectStore('ledger-record').add(data))
-    const paymentAccount = accountMap.value.get(data.paymentAccount!)!
-    paymentAccount.balance! -= data.expenses!
-    promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
-    if (data.type === '转账') {
-      const receivingAccount = accountMap.value.get(data.receivingAccount!)!
-      receivingAccount.balance! += data.expenses!
-      promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+    const type = data.type!
+    switch (type) {
+      case '支出': {
+        const paymentAccount = accountMap.value.get(data.paymentAccount!)!
+        paymentAccount.balance! -= data.expenses!
+        promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
+        break
+      }
+      case '收入': {
+        const receivingAccount = accountMap.value.get(data.receivingAccount!)!
+        receivingAccount.balance! += data.expenses!
+        promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+        break
+      }
+      case '转账': {
+        const paymentAccount = accountMap.value.get(data.paymentAccount!)!
+        paymentAccount.balance! -= data.expenses!
+        promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
+        const receivingAccount = accountMap.value.get(data.receivingAccount!)!
+        receivingAccount.balance! += data.expenses!
+        promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+        break
+      }
+      default: { const _: never = type }
     }
     transaction.commit()
     const [id] = await Promise.all(promises)
