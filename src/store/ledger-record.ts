@@ -19,10 +19,25 @@ export type LedgerRecord = Omit<
   category?: Category
   statementDate?: dayjs.Dayjs
 }
+
+async function queryAll() {
+  const transaction = DB.transaction('ledger-record', 'readonly')
+  const store = transaction.objectStore('ledger-record')
+  const results: RawLedgerRecord[] = []
+  let cursor = await store.openCursor(null, 'prev')
+  while (cursor) {
+    results.push(cursor.value)
+    cursor = await cursor.continue()
+  }
+  return results
+}
+
+const records = await queryAll()
+
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
   const { map: category } = storeToRefs(useCategoryStore())
   const { map: accountMap } = storeToRefs(useAccountStore())
-  const rawList = ref<RawLedgerRecord[]>([])
+  const rawList = ref(records)
   const list = computed(() => rawList.value.map<LedgerRecord>((item) => {
     return {
       ...item, category:
@@ -32,10 +47,6 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       statementDate: dayjs(item.statementDate),
     }
   }))
-
-  DB.getAll('ledger-record').then((list) => {
-    rawList.value = list
-  })
 
   async function createLedgerRecord(data: Omit<RawLedgerRecord, 'id'>) {
     const promises: Promise<number>[] = []
