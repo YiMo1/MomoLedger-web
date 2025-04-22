@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 import {
   type Account,
   type Category,
@@ -10,11 +12,12 @@ import { useAccountStore } from './account.ts'
 const DB = await openDB()
 
 export type LedgerRecord = Omit<
-  RawLedgerRecord, 'paymentAccount' | 'category' | 'receivingAccount'
+  RawLedgerRecord, 'paymentAccount' | 'category' | 'receivingAccount' | 'statementDate'
 > & {
   paymentAccount?: Account
   receivingAccount?: Account
   category?: Category
+  statementDate?: dayjs.Dayjs
 }
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
   const { map: category } = storeToRefs(useCategoryStore())
@@ -26,6 +29,7 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       category.value.get(item.category!),
       paymentAccount: accountMap.value.get(item.paymentAccount!),
       receivingAccount: accountMap.value.get(item.receivingAccount!),
+      statementDate: dayjs(item.statementDate),
     }
   }))
 
@@ -62,9 +66,8 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       }
       default: { const _: never = type }
     }
-    transaction.commit()
-    const [id] = await Promise.all(promises)
-    rawList.value.push({ ...data, id })
+    const [id] = await Promise.all([...promises, transaction.done])
+    rawList.value.push({ ...data, id: id! })
     return id
   }
 

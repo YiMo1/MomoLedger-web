@@ -1,12 +1,53 @@
 <script setup lang="ts">
-import HeaderComp from './Header.vue'
-import { useAccountStore } from '@/store/account.ts'
+import { groupBy } from 'es-toolkit'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
-const { list } = storeToRefs(useAccountStore())
+import HeaderComp from './Header.vue'
+import { type LedgerRecord, useAccountStore, useLedgerRecordStore } from '@/store/index.ts'
+import Bill from './Bill.vue'
+
+dayjs.extend(customParseFormat)
+
+const { list: account } = storeToRefs(useAccountStore())
+const { list: ledger } = storeToRefs(useLedgerRecordStore())
 const router = useRouter()
+const ledgerGroup = computed(() => {
+  type GroupMetaData = { income: number; expenses: number; week: string; date: string }
+  const dateFormat = 'YYYY-MM-DD'
+  const group = groupBy(
+    ledger.value,
+    (item) => item.statementDate!.format(dateFormat),
+  )
+  const map = new Map<GroupMetaData, LedgerRecord[]>()
+  for (const [key, value] of Object.entries(group)) {
+    const date = dayjs(key, dateFormat)
+    const statistics = value.reduce<Pick<GroupMetaData, 'income' | 'expenses'>>(
+      (statistics, item) => {
+        if (item.type === '支出') { statistics.expenses += item.expenses! }
+        if (item.type === '收入') { statistics.income += item.expenses! }
+        return statistics
+      },
+      { income: 0, expenses: 0 },
+    )
+
+    const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    const groupMetaData: GroupMetaData = {
+      ...statistics,
+      date: key === dayjs().format(dateFormat)
+        ? '今天'
+        : key === dayjs().subtract(1, 'day').format(dateFormat)
+          ? '昨天'
+          : date.format('M月D日'),
+      week: week[date.day()],
+    }
+    map.set(groupMetaData, value)
+  }
+  return [...map.entries()]
+})
 
 function addNewRecord() {
-  if (list.value.length < 1) {
+  if (account.value.length < 1) {
     showFailToast('请先添加一个账户')
     return
   }
@@ -27,46 +68,23 @@ function addNewRecord() {
       >
         添加一条新记账
       </van-button>
-      <div v-for="key in 10" :key="key" class="mb-2">
+      <div v-for="([metaData, ledgers]) in ledgerGroup" :key="metaData.date" class="mb-2">
         <div class="flex justify-between py-2">
-          <div><span class="mr-4 font-bold text-black">今天</span>周二</div>
           <div>
-            收<span class="ml-2 mr-4 text-emerald-400">0.00</span>
-            支<span class="ml-2 text-red-500">27.00</span>
+            <span class="mr-4 font-bold text-black">{{ metaData.date }}</span>
+            <span>{{ metaData.week }}</span>
+          </div>
+          <div>
+            <span>收</span>
+            <span class="ml-2 mr-4 text-emerald-400">
+              {{ (metaData.income / 100).toFixed(2) }}
+            </span>
+            <span>支</span>
+            <span class="ml-2 text-red-500">{{ (metaData.expenses / 100).toFixed(2) }}</span>
           </div>
         </div>
-        <div class="overflow-hidden rounded bg-white ">
-          <div class="px-4 py-2">
-            <div class="flex justify-between text-base">
-              <div class="text-gray-900">还款</div>
-              <div class="font-bold text-black">1352.82</div>
-            </div>
-            <div class="flex justify-between leading-normal">
-              <div>12:33</div>
-              <div>支付宝->花呗</div>
-            </div>
-          </div>
-          <div class="px-4 py-2">
-            <div class="flex justify-between text-base">
-              <div class="text-gray-900">还款</div>
-              <div class="font-bold text-black">1352.82</div>
-            </div>
-            <div class="flex justify-between leading-normal">
-              <div>12:33</div>
-              <div>支付宝->花呗</div>
-            </div>
-          </div>
-          <div class="px-4 py-2">
-            <div class="flex justify-between text-base">
-              <div class="text-gray-900">还款</div>
-              <div class="font-bold text-black">1352.82</div>
-            </div>
-            <div class="flex justify-between leading-normal">
-              <div>12:33</div>
-              <div>支付宝->花呗</div>
-            </div>
-          </div>
-          <div />
+        <div class="overflow-hidden rounded bg-white">
+          <bill v-for="item in ledgers" :key="item.id" :data="item" />
         </div>
       </div>
     </div>
