@@ -8,7 +8,7 @@ const router = useRouter()
 const route = useRoute()
 const accountStore = useAccountStore()
 
-const type = computed<NonNullable<Account['type']>>(() => route.query.accountType === '信贷账户'
+const type = computed<Account['type']>(() => route.query.accountType === '信贷账户'
   ? '信贷'
   : '资产')
 const title = computed(() => {
@@ -27,13 +27,31 @@ const formRel = ref<FormInstance>()
 async function createAccount() {
   try { await formRel.value?.validate() }
   catch { return }
-  await accountStore.createAccount({
-    name: name.value,
-    balance: Math.round((balance.value ?? 0) * 100),
-    note: note.value,
-    type: type.value,
-    limit: Math.round((limit.value ?? 0) * 100),
-  })
+
+  let account: DistributiveOmit<Account, 'id'>
+  switch (type.value) {
+    case '信贷': {
+      account = {
+        name: name.value,
+        note: note.value,
+        type: '信贷',
+        limit: Math.round((limit.value ?? 0) * 100),
+        debt: Math.round((balance.value ?? 0) * 100),
+      }
+      break
+    }
+    case '资产': {
+      account = {
+        name: name.value,
+        note: note.value,
+        type: '资产',
+        balance: Math.round((balance.value ?? 0) * 100),
+      }
+      break
+    }
+  }
+
+  await accountStore.createAccount(account)
   router.back()
 }
 </script>

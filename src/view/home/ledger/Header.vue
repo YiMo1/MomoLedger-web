@@ -4,7 +4,11 @@ import { useAccountStore } from '@/store/index.ts'
 const { list: account } = storeToRefs(useAccountStore())
 
 const netAssets = computed(() => account.value.reduce((sum, item) => {
-  sum += item.balance ?? 0
+  switch (item.type) {
+    case '资产': { sum += item.balance; break }
+    case '信贷': { sum += item.debt; break }
+    default: { const _: never = item }
+  }
   return sum
 }, 0))
 

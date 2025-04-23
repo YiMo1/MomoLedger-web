@@ -16,7 +16,7 @@ const totalAssets = computed(() => assetsAccount.value.reduce((sum, item) => {
   return sum
 }, 0))
 const totalDebt = computed(() => creditAccount.value.reduce((sum, item) => {
-  sum += item.balance ?? 0
+  sum += item.debt ?? 0
   return sum
 }, 0))
 
@@ -60,12 +60,12 @@ const actions = [
           <div>{{ item.name }}</div>
           <div
             :class="[
-              item.balance! > 0
+              item.debt! > 0
                 ? 'text-emerald-500'
-                : item.balance! < 0 ? 'text-red-500' : 'text-black',
+                : item.debt! < 0 ? 'text-red-500' : 'text-black',
             ]"
           >
-            {{ secret ? SECRET_TEXT : (item.balance! / 100).toFixed(2) }}
+            {{ secret ? SECRET_TEXT : (item.debt! / 100).toFixed(2) }}
           </div>
         </div>
       </div>

@@ -2,19 +2,15 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
+import type { AssetsAccount, CreditAccount } from './type.d.ts'
+
+export type * from './type.d.ts'
+export type Account = AssetsAccount | CreditAccount
+
 export const DB_VERSION = 1
 export const DB_NAME = 'momo-ledger'
 
 export const DB = await initDB()
-
-export type Account = {
-  id?: number
-  name?: string
-  balance?: number
-  note?: string
-  type?: '资产' | '信贷'
-  limit?: number
-}
 
 export type LedgerRecord = {
   id?: number
@@ -75,7 +71,7 @@ function open() {
 }
 
 interface Database extends DBSchema {
-  account: { key: NonNullable<Account['id']>; value: Account }
+  account: { key: Account['id']; value: Account }
   'ledger-record': {
     key: NonNullable <LedgerRecord['id']>
     value: LedgerRecord

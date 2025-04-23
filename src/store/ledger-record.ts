@@ -35,14 +35,15 @@ const records = await queryAll()
 
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
   const { map: category } = storeToRefs(useCategoryStore())
-  const { map: accountMap } = storeToRefs(useAccountStore())
+  const accountStore = useAccountStore()
+
   const rawList = ref(records)
   const list = computed(() => rawList.value.map<LedgerRecord>((item) => {
     return {
       ...item, category:
       category.value.get(item.category!),
-      paymentAccount: accountMap.value.get(item.paymentAccount!),
-      receivingAccount: accountMap.value.get(item.receivingAccount!),
+      paymentAccount: accountStore.map.get(item.paymentAccount!),
+      receivingAccount: accountStore.map.get(item.receivingAccount!),
       statementDate: dayjs(item.statementDate),
     }
   }))
@@ -54,23 +55,23 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
     const type = data.type!
     switch (type) {
       case '支出': {
-        const paymentAccount = accountMap.value.get(data.paymentAccount!)!
-        paymentAccount.balance! -= data.expenses!
+        const paymentAccount = accountStore.map.get(data.paymentAccount!)!
+        accountStore.transaction(paymentAccount, -(data.expenses ?? 0))
         promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
         break
       }
       case '收入': {
-        const receivingAccount = accountMap.value.get(data.receivingAccount!)!
-        receivingAccount.balance! += data.expenses!
+        const receivingAccount = accountStore.map.get(data.receivingAccount!)!
+        accountStore.transaction(receivingAccount, data.expenses ?? 0)
         promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
         break
       }
       case '转账': {
-        const paymentAccount = accountMap.value.get(data.paymentAccount!)!
-        paymentAccount.balance! -= data.expenses!
+        const paymentAccount = accountStore.map.get(data.paymentAccount!)!
+        accountStore.transaction(paymentAccount, -(data.expenses ?? 0))
         promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
-        const receivingAccount = accountMap.value.get(data.receivingAccount!)!
-        receivingAccount.balance! += data.expenses!
+        const receivingAccount = accountStore.map.get(data.receivingAccount!)!
+        accountStore.transaction(receivingAccount, data.expenses ?? 0)
         promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
         break
       }

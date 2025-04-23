@@ -9,9 +9,19 @@ defineProps<{ secretText: string }>()
 const { list } = storeToRefs(useAccountStore())
 
 const assets = computed(() => list.value.reduce((pre, cur) => {
-  pre.net += cur.balance ?? 0
-  if (cur.type === '资产') { pre.total += cur.balance ?? 0 }
-  if (cur.type === '信贷') { pre.negative += cur.balance ?? 0 }
+  switch (cur.type) {
+    case '信贷': {
+      pre.negative += cur.debt
+      pre.net += cur.debt
+      break
+    }
+    case '资产': {
+      pre.total += cur.balance
+      pre.net += cur.balance
+      break
+    }
+    default: { const _: never = cur }
+  }
   return pre
 }, { total: 0, negative: 0, net: 0 }))
 const show = ref(false)

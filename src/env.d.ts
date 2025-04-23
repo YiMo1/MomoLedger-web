@@ -28,3 +28,7 @@ declare module '*.svg?skipsvgo' {
   const src: FunctionalComponent<SVGAttributes>
   export default src
 }
+
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never
