@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { sortedIndexBy } from 'es-toolkit/compat'
 
 import {
   type Account,
@@ -75,9 +76,16 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       }
       default: { const _: never = type }
     }
-    const [id] = await Promise.all([...promises, transaction.done])
-    list.value.push(normalizeLedgerRecord({ ...data, id: id! }))
-    return id
+    await transaction.done
+    const record = normalizeLedgerRecord({ ...data, id: await promises[0]! })
+    const index = sortedIndexBy(
+      list.value,
+      record,
+      (item) => -item.statementDate!.valueOf(),
+      false,
+    )
+    list.value.splice(index, 0, record)
+    return record.id!
   }
 
   async function deleteLedgerRecord(id: NonNullable<RawLedgerRecord['id']>) {
