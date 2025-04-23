@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { useAccountStore } from './store/index.ts'
+import { useAccountStore, useLedgerRecordStore } from './store/index.ts'
 
-onBeforeMount(() => { useAccountStore().loadAccounts() })
+onBeforeMount(() => {
+  useAccountStore().loadAccounts()
+  useLedgerRecordStore().loadLedgerRecord()
+})
 </script>
 
 <template>
