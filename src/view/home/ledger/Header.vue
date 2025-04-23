@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { useAccountStore } from '@/store/index.ts'
+import dayjs from 'dayjs'
+
+import { useAccountStore, useLedgerRecordStore } from '@/store/index.ts'
 
 const { list: account } = storeToRefs(useAccountStore())
 
@@ -12,11 +14,26 @@ const netAssets = computed(() => account.value.reduce((sum, item) => {
   return sum
 }, 0))
 
-const r = ref({
-  expenditureForThisMonth: 89061,
-  balanceForThisMonth: -83619,
-  dailyAverageExpenditure: 11133,
-})
+const now = dayjs()
+const { list: record } = storeToRefs(useLedgerRecordStore())
+const statistics = computed(() => record.value.reduce(
+  (statistics, item, index) => {
+    if (item.statementDate?.format('YYYY-MM') === now.format('YYYY-MM')) {
+      if (item.type === '支出') {
+        statistics.expenditureForThisMonth += item.expenses ?? 0
+        statistics.balanceForThisMonth -= item.expenses ?? 0
+      }
+      if (item.type === '收入') {
+        statistics.balanceForThisMonth += item.expenses ?? 0
+      }
+    }
+    if (index === record.value.length - 1) {
+      statistics.dailyAverageExpenditure = statistics.expenditureForThisMonth / now.get('date')
+    }
+    return statistics
+  },
+  { expenditureForThisMonth: 0, balanceForThisMonth: 0, dailyAverageExpenditure: 0 },
+))
 </script>
 
 <template>
@@ -25,19 +42,19 @@ const r = ref({
       <div>
         <div>本月支出</div>
         <div class="mt-1 font-bold text-black">
-          {{ (r.expenditureForThisMonth / 100).toFixed(2) }}
+          {{ (statistics.expenditureForThisMonth / 100).toFixed(2) }}
         </div>
       </div>
       <div>
         <div>本月结余</div>
         <div class="mt-1 font-bold text-black">
-          {{ (r.balanceForThisMonth / 100).toFixed(2) }}
+          {{ (statistics.balanceForThisMonth / 100).toFixed(2) }}
         </div>
       </div>
       <div>
         <div>日均消费</div>
         <div class="mt-1 font-bold text-black">
-          {{ (r.dailyAverageExpenditure / 100).toFixed(2) }}
+          {{ (statistics.dailyAverageExpenditure / 100).toFixed(2) }}
         </div>
       </div>
     </div>
