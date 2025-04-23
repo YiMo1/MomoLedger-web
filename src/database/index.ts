@@ -76,16 +76,30 @@ function open() {
 
 interface Database extends DBSchema {
   account: { key: NonNullable<Account['id']>; value: Account }
-  'ledger-record': { key: NonNullable <LedgerRecord['id']>; value: LedgerRecord }
+  'ledger-record': {
+    key: NonNullable <LedgerRecord['id']>
+    value: LedgerRecord
+    indexes: {
+      idx_statementDate: NonNullable<LedgerRecord['statementDate']>
+    }
+  }
   category: { key: NonNullable<LedgerRecord['id']>; value: Category }
 }
 
 function upgradeDB(database: IDBPDatabase<Database>) {
   database.createObjectStore('account', { keyPath: 'id', autoIncrement: true })
-  database.createObjectStore('ledger-record', { keyPath: 'id', autoIncrement: true })
 
-  const store = database.createObjectStore('category', { keyPath: 'id', autoIncrement: true })
+  const ledgerRecordStore = database.createObjectStore(
+    'ledger-record',
+    { keyPath: 'id', autoIncrement: true },
+  )
+  ledgerRecordStore.createIndex('idx_statementDate', 'statementDate')
+
+  const categoryStore = database.createObjectStore(
+    'category',
+    { keyPath: 'id', autoIncrement: true },
+  )
   for (const item of category) {
-    store.add(item)
+    categoryStore.add(item)
   }
 }

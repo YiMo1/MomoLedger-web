@@ -21,8 +21,9 @@ export type LedgerRecord = Omit<
 async function queryAll() {
   const transaction = DB.transaction('ledger-record', 'readonly')
   const store = transaction.objectStore('ledger-record')
+  const index = store.index('idx_statementDate')
   const results: RawLedgerRecord[] = []
-  let cursor = await store.openCursor(null, 'prev')
+  let cursor = await index.openCursor(null, 'prev')
   while (cursor) {
     results.push(cursor.value)
     cursor = await cursor.continue()
