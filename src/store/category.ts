@@ -1,6 +1,4 @@
-import { type Category, openDB } from '../utils/database.ts'
-
-const DB = await openDB()
+import { type Category, DB } from '../utils/database.ts'
 
 export const useCategoryStore = defineStore('category', () => {
   const list = ref<Category[]>([])
@@ -16,7 +14,7 @@ export const useCategoryStore = defineStore('category', () => {
     return id
   }
 
-  async function deleteCategory(id: Category['id']) {
+  async function deleteCategory(id: NonNullable<Category['id']>) {
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       list.value.splice(index, 1)

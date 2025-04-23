@@ -1,6 +1,4 @@
-import { type Account, openDB } from '../utils/database.ts'
-
-const DB = await openDB()
+import { type Account, DB } from '../utils/database.ts'
 
 export const useAccountStore = defineStore('account', () => {
   const list = ref<Account[]>([])
@@ -16,7 +14,7 @@ export const useAccountStore = defineStore('account', () => {
     return id
   }
 
-  async function deleteAccount(id: Account['id']) {
+  async function deleteAccount(id: NonNullable<Account['id']>) {
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       list.value.splice(index, 1)

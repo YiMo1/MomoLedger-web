@@ -3,13 +3,11 @@ import dayjs from 'dayjs'
 import {
   type Account,
   type Category,
+  DB,
   type LedgerRecord as RawLedgerRecord,
-  openDB,
 } from '../utils/database.ts'
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
-
-const DB = await openDB()
 
 export type LedgerRecord = Omit<
   RawLedgerRecord, 'paymentAccount' | 'category' | 'receivingAccount' | 'statementDate'
