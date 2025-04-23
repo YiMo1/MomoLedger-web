@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAccountStore } from '@/store/account.ts'
 
-import type { Account } from '../utils/database.ts'
+import type { Account } from '../database/index.ts'
 import type { FormInstance } from 'vant'
 
 const router = useRouter()

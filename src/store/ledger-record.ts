@@ -5,7 +5,7 @@ import {
   type Category,
   DB,
   type LedgerRecord as RawLedgerRecord,
-} from '../utils/database.ts'
+} from '../database/index.ts'
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
 

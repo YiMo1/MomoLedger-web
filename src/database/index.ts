@@ -1,0 +1,91 @@
+import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } from 'idb'
+
+import { category } from './init-data/v1.ts'
+
+export const DB_VERSION = 1
+export const DB_NAME = 'momo-ledger'
+
+export const DB = await initDB()
+
+export type Account = {
+  id?: number
+  name?: string
+  balance?: number
+  note?: string
+  type?: '资产' | '信贷'
+  limit?: number
+}
+
+export type LedgerRecord = {
+  id?: number
+  expenses?: number
+  note?: string
+  statementDate?: number
+  paymentAccount?: Account['id']
+  createTime?: number
+  discount?: number
+  category?: Category['id']
+  type?: '支出' | '收入' | '转账'
+  receivingAccount?: Account['id']
+}
+
+export type Category = {
+  id?: number
+  text?: string
+  parent?: number
+  type?: '支出' | '收入'
+}
+
+async function initDB() {
+  const DB = await open()
+
+  if (import.meta.env.DEV) {
+    const tables: StoreNames<Database>[] = ['account', 'category', 'ledger-record']
+    const resultMap = new Map<StoreNames<Database>, Promise<any[]>>()
+    const transaction = DB.transaction(tables, 'readonly')
+
+    for (const table of tables) {
+      resultMap.set(table, transaction.objectStore(table).getAll())
+    }
+
+    await transaction.done
+    DB.close()
+    await deleteDB(DB_NAME)
+
+    const newDB = await open()
+    const newTransaction = newDB.transaction(tables, 'readwrite')
+
+    for (const table of tables) {
+      const store = newTransaction.objectStore(table)
+      const data = await resultMap.get(table)!
+      for (const item of data) {
+        store.put(item)
+      }
+    }
+
+    await newTransaction.done
+    return newDB
+  }
+
+  return DB
+}
+
+function open() {
+  return openDB<Database>(DB_NAME, DB_VERSION, { upgrade: upgradeDB })
+}
+
+interface Database extends DBSchema {
+  account: { key: NonNullable<Account['id']>; value: Account }
+  'ledger-record': { key: NonNullable <LedgerRecord['id']>; value: LedgerRecord }
+  category: { key: NonNullable<LedgerRecord['id']>; value: Category }
+}
+
+function upgradeDB(database: IDBPDatabase<Database>) {
+  database.createObjectStore('account', { keyPath: 'id', autoIncrement: true })
+  database.createObjectStore('ledger-record', { keyPath: 'id', autoIncrement: true })
+
+  const store = database.createObjectStore('category', { keyPath: 'id', autoIncrement: true })
+  for (const item of category) {
+    store.add(item)
+  }
+}

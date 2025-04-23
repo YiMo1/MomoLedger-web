@@ -1,4 +1,4 @@
-import { type Account, DB } from '../utils/database.ts'
+import { type Account, DB } from '../database/index.ts'
 
 export const useAccountStore = defineStore('account', () => {
   const list = ref<Account[]>([])

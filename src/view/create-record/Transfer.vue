@@ -10,7 +10,7 @@ import type {
   PickerConfirmEventParams,
   PickerOption,
 } from 'vant'
-import type { Account } from '@/utils/database.ts'
+import type { Account } from '@/database'
 
 const recordStore = useLedgerRecordStore()
 const accountStore = useAccountStore()

@@ -1,4 +1,4 @@
-import { type Category, DB } from '../utils/database.ts'
+import { type Category, DB } from '../database/index.ts'
 
 export const useCategoryStore = defineStore('category', () => {
   const list = ref<Category[]>([])
