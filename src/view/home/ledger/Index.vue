@@ -5,7 +5,6 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import HeaderComp from './Header.vue'
 import { type LedgerRecord, useAccountStore, useLedgerRecordStore } from '@/store/index.ts'
-import Bill from './Bill.vue'
 
 dayjs.extend(customParseFormat)
 
@@ -86,7 +85,7 @@ defineExpose({ addNewRecord })
           </div>
         </div>
         <div class="overflow-hidden rounded bg-white">
-          <bill v-for="item in ledgers" :key="item.id" :data="item" />
+          <bill-cell v-for="item in ledgers" :key="item.id" v-bind="item" />
         </div>
       </div>
     </div>
