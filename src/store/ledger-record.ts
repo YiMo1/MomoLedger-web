@@ -91,8 +91,32 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
   async function deleteLedgerRecord(id: NonNullable<RawLedgerRecord['id']>) {
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) {
+      const record = list.value[index]
       list.value.splice(index, 1)
-      return DB.delete('ledger-record', id)
+      const transaction = DB.transaction(['ledger-record', 'account'], 'readwrite')
+      transaction.objectStore('ledger-record').delete(record.id!)
+      const type = record.type!
+      switch (type) {
+        case '支出': {
+          accountStore.transaction(record.paymentAccount!, record.expenses ?? 0)
+          transaction.objectStore('account').put(toRaw(record.paymentAccount!))
+          break
+        }
+        case '收入': {
+          accountStore.transaction(record.receivingAccount!, -(record.expenses ?? 0))
+          transaction.objectStore('account').put(toRaw(record.receivingAccount!))
+          break
+        }
+        case '转账': {
+          accountStore.transaction(record.paymentAccount!, record.expenses ?? 0)
+          transaction.objectStore('account').put(toRaw(record.paymentAccount!))
+          accountStore.transaction(record.receivingAccount!, -(record.expenses ?? 0))
+          transaction.objectStore('account').put(toRaw(record.receivingAccount!))
+          break
+        }
+        default: { const _: never = type }
+      }
+      return transaction.done
     }
   }
 
