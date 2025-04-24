@@ -8,7 +8,7 @@ import type { ActionSheetAction, FloatingBubbleOffset } from 'vant/es'
 
 defineOptions({ name: 'HomeView' })
 
-const activeTabbar = ref(0)
+const activeTabbar = useSessionStorage('active_tabbar', 0)
 
 const show = ref(false)
 const actions = [
