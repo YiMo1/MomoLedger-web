@@ -67,7 +67,7 @@ const show = ref(false)
     <div class="w-4/5 rounded-md bg-white p-4">
       <div class="text-center text-lg font-bold">资产数据</div>
       <div class="mt-4">
-        <div>可使用资金：{{ assets.total }}</div>
+        <div>可使用资金：{{ (assets.total / 100).toFixed(2) }}</div>
       </div>
     </div>
   </van-overlay>
