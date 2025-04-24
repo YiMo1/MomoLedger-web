@@ -46,7 +46,11 @@ function onBubbleClick() {
     </van-tabbar-item>
   </van-tabbar>
   <van-floating-bubble
-    style="--van-floating-bubble-size: 60px; --van-floating-bubble-background: #059669"
+    style="
+      --van-floating-bubble-size: 60px;
+      --van-floating-bubble-background: #059669;
+      --van-floating-bubble-z-index: 2
+    "
     axis="lock"
     :offset="bubbleOffset"
     icon="plus"

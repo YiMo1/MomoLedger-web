@@ -59,8 +59,9 @@ const show = ref(false)
   </div>
   <van-overlay
     :show="show"
-    z-index="2"
+    z-index="3"
     class-name="flex items-center justify-center"
+    teleport="body"
     @click.self="show = false"
   >
     <div class="w-4/5 rounded-md bg-white p-4">
