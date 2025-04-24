@@ -6,6 +6,8 @@ import Ledger from './ledger/Index.vue'
 
 import type { ActionSheetAction, FloatingBubbleOffset } from 'vant'
 
+defineOptions({ name: 'HomeView' })
+
 const activeTabbar = ref(0)
 
 const show = ref(false)

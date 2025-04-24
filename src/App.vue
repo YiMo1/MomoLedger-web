@@ -8,5 +8,9 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <router-view />
+  <router-view #="{Component}">
+    <keep-alive include="HomeView">
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
