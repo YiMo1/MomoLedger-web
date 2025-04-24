@@ -32,10 +32,7 @@ export default defineConfig({
       resolvers: [VantResolver()],
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
     }),
-    Components({
-      dts: './src/components.d.ts',
-      resolvers: [VantResolver()],
-    }),
+    Components({ dts: false, resolvers: [VantResolver()] }),
     svgLoader({ defaultImport: 'url' }),
   ],
   css: {

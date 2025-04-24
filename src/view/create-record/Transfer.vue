@@ -9,7 +9,7 @@ import {
 import type {
   PickerConfirmEventParams,
   PickerOption,
-} from 'vant'
+} from 'vant/es'
 import type { Account } from '@/database'
 
 const recordStore = useLedgerRecordStore()

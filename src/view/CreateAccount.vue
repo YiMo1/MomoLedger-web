@@ -2,7 +2,7 @@
 import { useAccountStore } from '@/store/account.ts'
 
 import type { Account } from '../database/index.ts'
-import type { FormInstance } from 'vant'
+import type { FormInstance } from 'vant/es'
 
 const router = useRouter()
 const route = useRoute()

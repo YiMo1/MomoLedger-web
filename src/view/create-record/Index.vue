@@ -9,7 +9,7 @@ import type {
 import type {
   ActionSheetAction,
   FormInstance,
-} from 'vant'
+} from 'vant/es'
 import type { defineComponent } from 'vue'
 
 type RecordType = NonNullable<LedgerRecord['type']>

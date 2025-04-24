@@ -11,7 +11,7 @@ import type {
   PickerColumn,
   PickerConfirmEventParams,
   PickerOption,
-} from 'vant'
+} from 'vant/es'
 
 const recordStore = useLedgerRecordStore()
 const accountStore = useAccountStore()

@@ -4,7 +4,7 @@ import LedgerIcon from '../../assets/icon/家.svg?component'
 import Wallet from './wallet/Index.vue'
 import Ledger from './ledger/Index.vue'
 
-import type { ActionSheetAction, FloatingBubbleOffset } from 'vant'
+import type { ActionSheetAction, FloatingBubbleOffset } from 'vant/es'
 
 defineOptions({ name: 'HomeView' })
 
