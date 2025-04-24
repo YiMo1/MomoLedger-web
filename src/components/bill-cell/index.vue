@@ -11,7 +11,7 @@ const categoryText = computed(() => {
 </script>
 
 <template>
-  <div class="px-4 py-1.5">
+  <div class="bg-white px-4 py-1.5">
     <div class="flex justify-between text-base">
       <div class="flex items-center text-gray-900">
         <span class="mr-1">{{ categoryText }}</span>
