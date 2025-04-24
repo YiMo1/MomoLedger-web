@@ -53,6 +53,8 @@ function addNewRecord() {
   }
   router.push('/create_record')
 }
+
+defineExpose({ addNewRecord })
 </script>
 
 <template>
