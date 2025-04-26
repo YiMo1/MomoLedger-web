@@ -11,6 +11,7 @@ abstract class Account implements Data {
   readonly id: number
   name: string
   note: string
+  abstract type: '资产' | '信贷'
 
   constructor({ id, name, note }: AccountOptions) {
     this.id = id
@@ -20,14 +21,14 @@ abstract class Account implements Data {
 
   abstract expenses(amount: number): void
   abstract income(amount: number): void
-  abstract structured(): unknown
+  structured() { return pick(this, ['id', 'name', 'note', 'type']) }
 }
 
 interface AssetsAccountOptions extends AccountOptions {
   balance: number
 }
 export class AssetsAccount extends Account {
-  readonly type = '资产' as const
+  readonly type = '资产'
   balance: number
 
   constructor({ balance, ...superOptions }: AssetsAccountOptions) {
@@ -35,17 +36,11 @@ export class AssetsAccount extends Account {
     this.balance = balance
   }
 
-  expenses(amount: number) {
-    this.balance -= amount
-  }
+  expenses(amount: number) { this.balance -= amount }
 
-  income(amount: number) {
-    this.balance += amount
-  }
+  income(amount: number) { this.balance += amount }
 
-  structured() {
-    return pick(this, ['balance', 'id', 'name', 'type', 'note'])
-  }
+  structured() { return { ...super.structured(), ...pick(this, ['balance']) } }
 }
 
 interface CreditAccountOptions extends AccountOptions {
@@ -53,7 +48,7 @@ interface CreditAccountOptions extends AccountOptions {
   limit: number
 }
 export class CreditAccount extends Account {
-  readonly type = '信贷' as const
+  readonly type = '信贷'
   debt: number
   limit: number
 
@@ -63,17 +58,11 @@ export class CreditAccount extends Account {
     this.limit = limit
   }
 
-  expenses(amount: number) {
-    this.debt -= amount
-  }
+  expenses(amount: number) { this.debt -= amount }
 
-  income(amount: number) {
-    this.debt += amount
-  }
+  income(amount: number) { this.debt += amount }
 
-  structured() {
-    return pick(this, ['debt', 'id', 'type', 'limit', 'name', 'note'])
-  }
+  structured() { return { ...super.structured(), ...pick(this, ['debt', 'limit']) } }
 }
 
 type AccountType = AssetsAccount | CreditAccount
