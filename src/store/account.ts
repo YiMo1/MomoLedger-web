@@ -1,4 +1,20 @@
-import { type Account, DB } from '../database/index.ts'
+import {
+  type Account,
+  AssetsAccount,
+  CreditAccount,
+  DB,
+  type StructuredAccount,
+} from '../database/index.ts'
+
+import type { DistributedOmit } from 'type-fest'
+
+function buildAccount(options: StructuredAccount) {
+  switch (options.type) {
+    case '资产': { return new AssetsAccount(options) }
+    case '信贷': { return new CreditAccount(options) }
+    default: { const never: never = options; return never }
+  }
+}
 
 export const useAccountStore = defineStore('account', () => {
   const isLoaded = ref(false)
@@ -8,13 +24,14 @@ export const useAccountStore = defineStore('account', () => {
   async function loadAccounts() {
     if (isLoaded.value) return
     isLoaded.value = true
-    list.value = await DB.getAll('account')
+    list.value = (await DB.getAll('account')).map((item) => buildAccount(item))
   }
 
-  async function createAccount(data: DistributiveOmit<Account, 'id'>) {
-    const id = await DB.add('account', data as Account)
-    list.value.push({ ...data, id })
-    return id
+  async function createAccount(options: DistributedOmit<StructuredAccount, 'id'>) {
+    const id = await DB.add('account', options as StructuredAccount)
+    const account = buildAccount({ ...options, id })
+    list.value.push(account)
+    return account
   }
 
   function deleteAccount(id: Account['id']) {
@@ -33,18 +50,5 @@ export const useAccountStore = defineStore('account', () => {
     }
   }
 
-  /**
-   * 对不同类型的账户进行统一交易。
-   * @param account 交易账户。
-   * @param amount 交易金额，金额正数为收入，金额负数为支出。
-   */
-  function transaction(account: Account, amount: number) {
-    switch (account.type) {
-      case '信贷': { account.debt += amount; break }
-      case '资产': { account.balance += amount; break }
-      default: { const _: never = account }
-    }
-  }
-
-  return { list, map, createAccount, deleteAccount, updateAccount, transaction, loadAccounts }
+  return { list, map, createAccount, deleteAccount, updateAccount, loadAccounts }
 })

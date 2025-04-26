@@ -2,10 +2,9 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
-import type { AssetsAccount, CreditAccount } from './type.d.ts'
+import type { StructuredAccount } from './table/index.ts'
 
-export type * from './type.d.ts'
-export type Account = AssetsAccount | CreditAccount
+export * from './table/index.ts'
 
 export const DB_VERSION = 1
 export const DB_NAME = 'momo-ledger'
@@ -17,12 +16,12 @@ export type LedgerRecord = {
   expenses?: number
   note?: string
   statementDate?: number
-  paymentAccount?: Account['id']
+  paymentAccount?: StructuredAccount['id']
   createTime?: number
   discount?: number
   category?: Category['id']
   type?: '支出' | '收入' | '转账'
-  receivingAccount?: Account['id']
+  receivingAccount?: StructuredAccount['id']
 }
 
 export type Category = {
@@ -70,8 +69,8 @@ function open() {
   return openDB<Database>(DB_NAME, DB_VERSION, { upgrade: upgradeDB })
 }
 
-interface Database extends DBSchema {
-  account: { key: Account['id']; value: Account }
+export interface Database extends DBSchema {
+  account: { key: StructuredAccount['id']; value: StructuredAccount }
   'ledger-record': {
     key: NonNullable <LedgerRecord['id']>
     value: LedgerRecord

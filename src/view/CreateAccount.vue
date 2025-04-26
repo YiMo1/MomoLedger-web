@@ -28,10 +28,10 @@ async function createAccount() {
   try { await formRel.value?.validate() }
   catch { return }
 
-  let account: DistributiveOmit<Account, 'id'>
+  let options: Parameters<typeof accountStore.createAccount>[0]
   switch (type.value) {
     case '信贷': {
-      account = {
+      options = {
         name: name.value,
         note: note.value,
         type: '信贷',
@@ -41,7 +41,7 @@ async function createAccount() {
       break
     }
     case '资产': {
-      account = {
+      options = {
         name: name.value,
         note: note.value,
         type: '资产',
@@ -51,7 +51,7 @@ async function createAccount() {
     }
   }
 
-  await accountStore.createAccount(account)
+  await accountStore.createAccount(options)
   router.back()
 }
 </script>

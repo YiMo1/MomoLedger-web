@@ -21,8 +21,7 @@ export type LedgerRecord = Omit<
 
 export const useLedgerRecordStore = defineStore('ledger-record', () => {
   const { map: category } = storeToRefs(useCategoryStore())
-  const accountStore = useAccountStore()
-  const { map: account } = storeToRefs(accountStore)
+  const { map: account } = storeToRefs(useAccountStore())
 
   const list = ref<LedgerRecord[]>([])
 
@@ -55,23 +54,23 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
     switch (type) {
       case '支出': {
         const paymentAccount = account.value.get(data.paymentAccount!)!
-        accountStore.transaction(paymentAccount, -(data.expenses ?? 0))
-        promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
+        paymentAccount.expenses(data.expenses ?? 0)
+        promises.push(transaction.objectStore('account').put(paymentAccount.structured()))
         break
       }
       case '收入': {
         const receivingAccount = account.value.get(data.receivingAccount!)!
-        accountStore.transaction(receivingAccount, data.expenses ?? 0)
-        promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+        receivingAccount.income(data.expenses ?? 0)
+        promises.push(transaction.objectStore('account').put(receivingAccount.structured()))
         break
       }
       case '转账': {
         const paymentAccount = account.value.get(data.paymentAccount!)!
-        accountStore.transaction(paymentAccount, -(data.expenses ?? 0))
-        promises.push(transaction.objectStore('account').put(toRaw(paymentAccount)))
+        paymentAccount.expenses(data.expenses ?? 0)
+        promises.push(transaction.objectStore('account').put(paymentAccount.structured()))
         const receivingAccount = account.value.get(data.receivingAccount!)!
-        accountStore.transaction(receivingAccount, data.expenses ?? 0)
-        promises.push(transaction.objectStore('account').put(toRaw(receivingAccount)))
+        receivingAccount.income(data.expenses ?? 0)
+        promises.push(transaction.objectStore('account').put(receivingAccount.structured()))
         break
       }
       default: { const _: never = type }
@@ -98,19 +97,19 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       const type = record.type!
       switch (type) {
         case '支出': {
-          accountStore.transaction(record.paymentAccount!, record.expenses ?? 0)
+          record.paymentAccount?.income(record.expenses ?? 0)
           transaction.objectStore('account').put(toRaw(record.paymentAccount!))
           break
         }
         case '收入': {
-          accountStore.transaction(record.receivingAccount!, -(record.expenses ?? 0))
+          record.receivingAccount?.expenses(record.expenses ?? 0)
           transaction.objectStore('account').put(toRaw(record.receivingAccount!))
           break
         }
         case '转账': {
-          accountStore.transaction(record.paymentAccount!, record.expenses ?? 0)
+          record.paymentAccount?.income(record.expenses ?? 0)
           transaction.objectStore('account').put(toRaw(record.paymentAccount!))
-          accountStore.transaction(record.receivingAccount!, -(record.expenses ?? 0))
+          record.receivingAccount?.expenses(record.expenses ?? 0)
           transaction.objectStore('account').put(toRaw(record.receivingAccount!))
           break
         }
