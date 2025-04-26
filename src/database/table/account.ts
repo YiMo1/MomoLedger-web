@@ -78,4 +78,4 @@ export class CreditAccount extends Account {
 
 type AccountType = AssetsAccount | CreditAccount
 export type { AccountType as Account }
-export type StructuredAccount = ReturnType<AccountType['structured']>
+export type AccountDTO = ReturnType<AccountType['structured']>

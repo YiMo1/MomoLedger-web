@@ -2,7 +2,7 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
-import type { StructuredAccount } from './table/index.ts'
+import type { AccountDTO } from './table/index.ts'
 
 export * from './table/index.ts'
 
@@ -16,12 +16,12 @@ export type LedgerRecord = {
   expenses?: number
   note?: string
   statementDate?: number
-  paymentAccount?: StructuredAccount['id']
+  paymentAccount?: AccountDTO['id']
   createTime?: number
   discount?: number
   category?: Category['id']
   type?: '支出' | '收入' | '转账'
-  receivingAccount?: StructuredAccount['id']
+  receivingAccount?: AccountDTO['id']
 }
 
 export type Category = {
@@ -70,7 +70,7 @@ function open() {
 }
 
 export interface Database extends DBSchema {
-  account: { key: StructuredAccount['id']; value: StructuredAccount }
+  account: { key: AccountDTO['id']; value: AccountDTO }
   'ledger-record': {
     key: NonNullable <LedgerRecord['id']>
     value: LedgerRecord

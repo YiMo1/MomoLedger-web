@@ -98,19 +98,19 @@ export const useLedgerRecordStore = defineStore('ledger-record', () => {
       switch (type) {
         case '支出': {
           record.paymentAccount?.income(record.expenses ?? 0)
-          transaction.objectStore('account').put(toRaw(record.paymentAccount!))
+          transaction.objectStore('account').put(record.paymentAccount!.structured())
           break
         }
         case '收入': {
           record.receivingAccount?.expenses(record.expenses ?? 0)
-          transaction.objectStore('account').put(toRaw(record.receivingAccount!))
+          transaction.objectStore('account').put(record.receivingAccount!.structured())
           break
         }
         case '转账': {
           record.paymentAccount?.income(record.expenses ?? 0)
-          transaction.objectStore('account').put(toRaw(record.paymentAccount!))
+          transaction.objectStore('account').put(record.paymentAccount!.structured())
           record.receivingAccount?.expenses(record.expenses ?? 0)
-          transaction.objectStore('account').put(toRaw(record.receivingAccount!))
+          transaction.objectStore('account').put(record.receivingAccount!.structured())
           break
         }
         default: { const _: never = type }

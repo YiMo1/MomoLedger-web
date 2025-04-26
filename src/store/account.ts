@@ -1,14 +1,14 @@
 import {
   type Account,
+  type AccountDTO,
   AssetsAccount,
   CreditAccount,
   DB,
-  type StructuredAccount,
 } from '../database/index.ts'
 
 import type { DistributedOmit } from 'type-fest'
 
-function buildAccount(options: StructuredAccount) {
+function buildAccount(options: AccountDTO) {
   switch (options.type) {
     case '资产': { return new AssetsAccount(options) }
     case '信贷': { return new CreditAccount(options) }
@@ -27,8 +27,8 @@ export const useAccountStore = defineStore('account', () => {
     list.value = (await DB.getAll('account')).map((item) => buildAccount(item))
   }
 
-  async function createAccount(options: DistributedOmit<StructuredAccount, 'id'>) {
-    const id = await DB.add('account', options as StructuredAccount)
+  async function createAccount(options: DistributedOmit<AccountDTO, 'id'>) {
+    const id = await DB.add('account', options as AccountDTO)
     const account = buildAccount({ ...options, id })
     list.value.push(account)
     return account
