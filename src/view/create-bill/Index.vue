@@ -3,33 +3,31 @@ import Expenses from './Expenses.vue'
 import Income from './Income.vue'
 import Transfer from './Transfer.vue'
 
-import type {
-  LedgerRecord,
-} from '@/store/index.ts'
+import type { Bill } from '@/database/index.ts'
 import type {
   ActionSheetAction,
   FormInstance,
 } from 'vant/es'
 import type { defineComponent } from 'vue'
 
-type RecordType = NonNullable<LedgerRecord['type']>
+type BillType = NonNullable<Bill['type']>
 
-const Comps: Record<RecordType, ReturnType<typeof defineComponent>> = {
+const Comps: Record<BillType, ReturnType<typeof defineComponent>> = {
   支出: Expenses,
   收入: Income,
   转账: Transfer,
 }
 
 // 类别
-const type = ref<RecordType>('支出')
+const type = ref<BillType>('支出')
 const showAction = ref(false)
 const actions = [
   { name: '支出' },
   { name: '收入' },
   { name: '转账' },
-] satisfies { name: RecordType }[]
+] satisfies { name: BillType }[]
 function onActionSelect({ name }: ActionSheetAction) {
-  type.value = name as RecordType
+  type.value = name as BillType
 }
 
 const instance = ref<InstanceType<typeof Expenses | typeof Income>>()

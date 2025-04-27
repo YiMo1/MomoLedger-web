@@ -85,4 +85,5 @@ export const category: Category[] = [
   { id: 82, text: '工资', parent: 71, type: '收入' },
   { id: 83, text: '二手闲置', parent: 71, type: '收入' },
   { id: 84, text: '报销', parent: 71, type: '收入' },
+  { id: 85, text: '转账', type: '转账' },
 ]

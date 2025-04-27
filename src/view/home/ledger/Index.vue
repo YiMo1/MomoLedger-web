@@ -16,7 +16,7 @@ const ledgerGroup = computed(() => {
   const dateFormat = 'YYYY-MM-DD'
   return Object.entries(groupBy(
     ledger.value,
-    (item) => item.statementDate!.format(dateFormat),
+    (item) => item.billTime.format(dateFormat),
   )).map(([date, list]) => [dayjs(date, dateFormat), list] as const)
 })
 
@@ -25,7 +25,7 @@ function addNewRecord() {
     showFailToast('请先添加一个账户')
     return
   }
-  router.push('/create_record')
+  router.push('/create_bill')
 }
 
 defineExpose({ addNewRecord })

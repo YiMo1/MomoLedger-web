@@ -2,7 +2,7 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
-import type { AccountDTO } from './table/index.ts'
+import type { AccountDTO, BillDTO } from './table/index.ts'
 
 export * from './table/index.ts'
 
@@ -11,31 +11,18 @@ export const DB_NAME = 'momo-ledger'
 
 export const DB = await initDB()
 
-export type LedgerRecord = {
-  id?: number
-  expenses?: number
-  note?: string
-  statementDate?: number
-  paymentAccount?: AccountDTO['id']
-  createTime?: number
-  discount?: number
-  category?: Category['id']
-  type?: '支出' | '收入' | '转账'
-  receivingAccount?: AccountDTO['id']
-}
-
 export type Category = {
   id?: number
   text?: string
   parent?: number
-  type?: '支出' | '收入'
+  type?: '支出' | '收入' | '转账'
 }
 
 async function initDB() {
   const DB = await open()
 
   if (import.meta.env.DEV) {
-    const tables: StoreNames<Database>[] = ['account', 'category', 'ledger-record']
+    const tables: StoreNames<Database>[] = ['account', 'category', 'bill']
     const resultMap = new Map<StoreNames<Database>, Promise<any[]>>()
     const transaction = DB.transaction(tables, 'readonly')
 
@@ -71,21 +58,21 @@ function open() {
 
 export interface Database extends DBSchema {
   account: { key: AccountDTO['id']; value: AccountDTO }
-  'ledger-record': {
-    key: NonNullable <LedgerRecord['id']>
-    value: LedgerRecord
+  bill: {
+    key: BillDTO['id']
+    value: BillDTO
     indexes: {
-      idx_statementDate: NonNullable<LedgerRecord['statementDate']>
+      idx_statementDate: BillDTO['billTime']
     }
   }
-  category: { key: NonNullable<LedgerRecord['id']>; value: Category }
+  category: { key: NonNullable<Category['id']>; value: Category }
 }
 
 function upgradeDB(database: IDBPDatabase<Database>) {
   database.createObjectStore('account', { keyPath: 'id', autoIncrement: true })
 
   const ledgerRecordStore = database.createObjectStore(
-    'ledger-record',
+    'bill',
     { keyPath: 'id', autoIncrement: true },
   )
   ledgerRecordStore.createIndex('idx_statementDate', 'statementDate')

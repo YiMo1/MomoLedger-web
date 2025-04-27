@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-import type { LedgerRecord } from '@/store/index.ts'
+import type { Bill } from '@/database/index.ts'
 
 defineOptions({ name: 'BillCellGroup' })
-const props = defineProps<{ data: LedgerRecord[]; date: dayjs.Dayjs }>()
+const props = defineProps<{ data: Bill[]; date: dayjs.Dayjs }>()
 
 const statistics = computed(() => props.data.reduce<{
   income: number
   expenses: number
 }>((statistics, item) => {
-  if (item.type === '支出') { statistics.expenses += item.expenses! }
-  if (item.type === '收入') { statistics.income += item.expenses! }
+  if (item.type === '支出') { statistics.expenses += item.amount! }
+  if (item.type === '收入') { statistics.income += item.amount! }
   return statistics
 }, { income: 0, expenses: 0 }))
 
@@ -47,6 +47,6 @@ const displayDate = computed(() => {
     </div>
   </div>
   <div class="overflow-hidden rounded">
-    <bill-cell v-for="item in data" :key="item.id" v-bind="item" />
+    <bill-cell v-for="item in data" :key="item.id" :bill="item" />
   </div>
 </template>

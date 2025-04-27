@@ -18,7 +18,7 @@ const accountStore = useAccountStore()
 
 const note = ref('')
 const expenses = ref(0)
-const discount = ref<number>()
+const commission = ref<number>()
 
 const showPopup = ref<'account' | 'statementDate' | 'category'>()
 
@@ -34,15 +34,15 @@ function onAccountPickerConfrim({ selectedValues }: PickerConfirmEventParams) {
 }
 
 // 账单日期
-const statementDate = ref(dayjs())
-const currentDate = ref(statementDate.value.format('YYYY-MM-DD').split('-'))
-const currentTime = ref(statementDate.value.format('HH-mm').split('-'))
+const billTime = ref(dayjs())
+const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
+const currentTime = ref(billTime.value.format('HH-mm').split('-'))
 function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].
     map(Number) as [number, number, number, number, number]
   args[1] -= 1
-  statementDate.value = dayjs(new Date(...args))
+  billTime.value = dayjs(new Date(...args))
   showPopup.value = undefined
 }
 
@@ -56,10 +56,10 @@ const categoryColumns = computed(() => {
     return pre
   }, [])
 })
-const category = ref<{ id?: number; text?: string }>({})
+const category = ref<{ id: number; text: string }>()
 function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) {
   category.value = {
-    id: selectedOptions[selectedOptions.length - 1]?.value as number | undefined,
+    id: selectedOptions[selectedOptions.length - 1]!.value as number,
     text: selectedOptions.map((item) => item?.text).join('/'),
   }
   showPopup.value = undefined
@@ -68,13 +68,12 @@ function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) 
 async function create() {
   await recordStore.createLedgerRecord({
     type: '收入',
-    category: category.value.id,
+    category: category.value!.id,
     note: note.value,
-    receivingAccount: account.value.id,
-    expenses: Math.round(expenses.value * 100),
-    discount: discount.value && Math.round(discount.value * 100),
-    createTime: Date.now(),
-    statementDate: statementDate.value.toDate().getTime(),
+    account: account.value.id,
+    amount: Math.round(expenses.value * 100),
+    commission: Math.round((commission.value ?? 0) * 100),
+    billTime: billTime.value.valueOf(),
   })
 }
 
@@ -97,14 +96,14 @@ defineExpose({ create })
     placeholder="请输入金额"
     :rules="[{ required: true, message: '请输入金额' }]" />
   <van-field
-    :model-value="statementDate.format('YYYY-MM-DD HH:mm')"
+    :model-value="billTime.format('YYYY-MM-DD HH:mm')"
     label="账单日期"
     is-link
     readonly
     :rules="[{ required: true, message: '请选择账单日期' }]"
     @click=" showPopup = 'statementDate'" />
   <van-field
-    :model-value="category.text"
+    :model-value="category?.text"
     label="分类"
     is-link
     readonly

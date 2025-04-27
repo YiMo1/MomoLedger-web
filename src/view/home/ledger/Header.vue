@@ -18,13 +18,13 @@ const now = dayjs()
 const { list: record } = storeToRefs(useLedgerRecordStore())
 const statistics = computed(() => record.value.reduce(
   (statistics, item, index) => {
-    if (item.statementDate?.format('YYYY-MM') === now.format('YYYY-MM')) {
+    if (item.billTime.format('YYYY-MM') === now.format('YYYY-MM')) {
       if (item.type === '支出') {
-        statistics.expenditureForThisMonth += item.expenses ?? 0
-        statistics.balanceForThisMonth -= item.expenses ?? 0
+        statistics.expenditureForThisMonth += item.amount ?? 0
+        statistics.balanceForThisMonth -= item.amount ?? 0
       }
       if (item.type === '收入') {
-        statistics.balanceForThisMonth += item.expenses ?? 0
+        statistics.balanceForThisMonth += item.amount ?? 0
       }
     }
     if (index === record.value.length - 1) {

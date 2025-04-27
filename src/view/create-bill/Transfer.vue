@@ -17,7 +17,7 @@ const accountStore = useAccountStore()
 
 const note = ref('')
 const expenses = ref(0)
-const discount = ref<number>()
+const commission = ref<number>()
 
 const showPopup = ref<'transferOutAccount' | 'statementDate' | 'transferToAccount'>()
 
@@ -35,28 +35,28 @@ function onAccountPickerConfrim({ selectedValues }: PickerConfirmEventParams) {
 }
 
 // 账单日期
-const statementDate = ref(dayjs())
-const currentDate = ref(statementDate.value.format('YYYY-MM-DD').split('-'))
-const currentTime = ref(statementDate.value.format('HH-mm').split('-'))
+const billTime = ref(dayjs())
+const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
+const currentTime = ref(billTime.value.format('HH-mm').split('-'))
 function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].
     map(Number) as [number, number, number, number, number]
   args[1] -= 1
-  statementDate.value = dayjs(new Date(...args))
+  billTime.value = dayjs(new Date(...args))
   showPopup.value = undefined
 }
 
 async function create() {
   await recordStore.createLedgerRecord({
     type: '转账',
+    category: 85,
     note: note.value,
-    paymentAccount: transferOutAccount.value?.id,
-    receivingAccount: transferToAccount.value?.id,
-    expenses: Math.round(expenses.value * 100),
-    discount: discount.value && Math.round(discount.value * 100),
-    createTime: Date.now(),
-    statementDate: statementDate.value.toDate().getTime(),
+    paymentAccount: transferOutAccount.value!.id,
+    receivingAccount: transferToAccount.value!.id,
+    amount: Math.round(expenses.value * 100),
+    commission: Math.round((commission.value ?? 0) * 100),
+    billTime: billTime.value.valueOf(),
   })
 }
 
@@ -86,14 +86,14 @@ defineExpose({ create })
     placeholder="请输入金额"
     :rules="[{ required: true, message: '请输入金额' }]" />
   <van-field
-    :model-value="statementDate.format('YYYY-MM-DD HH:mm')"
+    :model-value="billTime.format('YYYY-MM-DD HH:mm')"
     label="账单日期"
     is-link
     readonly
     :rules="[{ required: true, message: '请选择账单日期' }]"
     @click=" showPopup = 'statementDate'" />
   <van-field
-    v-model.number="discount"
+    v-model.number="commission"
     type="number"
     label="手续费"
     :min="0"
