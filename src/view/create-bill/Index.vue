@@ -10,7 +10,7 @@ import type {
 } from 'vant/es'
 import type { defineComponent } from 'vue'
 
-type BillType = NonNullable<Bill['type']>
+type BillType = Bill['type']
 
 const Comps: Record<BillType, ReturnType<typeof defineComponent>> = {
   支出: Expenses,

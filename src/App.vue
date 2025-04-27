@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { useAccountStore, useLedgerRecordStore } from './store/index.ts'
 
+const isLoad = ref(false)
+
 onBeforeMount(() => {
-  useAccountStore().loadAccounts()
-  useLedgerRecordStore().loadLedgerRecord()
+  Promise.all([
+    useAccountStore().loadAccounts(),
+    useLedgerRecordStore().loadLedgerRecord(),
+  ]).then(() => isLoad.value = true)
 })
 </script>
 
 <template>
-  <router-view #="{Component}">
+  <router-view v-if="isLoad" #="{Component}">
     <keep-alive include="HomeView">
       <component :is="Component" />
     </keep-alive>
