@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { isUndefined } from 'es-toolkit'
 
 import {
   useAccountStore,
@@ -8,7 +9,6 @@ import {
 } from '@/store/index.ts'
 
 import type {
-  PickerColumn,
   PickerConfirmEventParams,
   PickerOption,
 } from 'vant/es'
@@ -49,21 +49,17 @@ function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
 // 分类
 const categoryStore = useCategoryStore()
 const categoryColumns = computed(() => {
-  const categorys = categoryStore.list.filter((item) => item.type === '支出')
-  const map = new Map<number, PickerOption>()
-  return categorys.sort((a, b) => a.id! - b.id!).reduce((pre: PickerColumn, item) => {
-    const option = { text: item.text, value: item.id }
-    if (item.parent === undefined) {
-      pre.push(option)
-      map.set(option.value!, option)
+  const categorys = categoryStore.list.find((item) => item.text === '支出' &&
+    isUndefined(item.parent))?.children ?? []
+  return categorys.map((item) => {
+    const option: PickerOption = { text: item.text, value: item.id }
+    if (item.children.length > 0) {
+      option.children = item.children.map((child) => {
+        return { text: child.text, value: child.id }
+      })
     }
-    else {
-      const parent = map.get(item.parent!)!
-      if (parent.children === undefined) { parent.children = [] }
-      parent.children.push(option)
-    }
-    return pre
-  }, [])
+    return option
+  })
 })
 const category = ref<{ id: number; text: string }>()
 function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) {

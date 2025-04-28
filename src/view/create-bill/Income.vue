@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { isUndefined } from 'es-toolkit'
 
 import {
   useAccountStore,
@@ -48,13 +49,10 @@ function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
 
 // 分类
 const categoryStore = useCategoryStore()
-const categoryColumns = computed(() => {
-  const categorys = categoryStore.list.filter((item) => item.type === '收入')
-  return categorys.sort((a, b) => a.id! - b.id!).reduce((pre: PickerColumn, item) => {
-    const option = { text: item.text, value: item.id }
-    item.text !== '收入' && pre.push(option)
-    return pre
-  }, [])
+const categoryColumns = computed<PickerColumn>(() => {
+  const categorys = categoryStore.list.find((item) => item.text === '收入' &&
+    isUndefined(item.parent))?.children ?? []
+  return categorys.map((item) => { return { text: item.text, value: item.id } })
 })
 const category = ref<{ id: number; text: string }>()
 function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) {
