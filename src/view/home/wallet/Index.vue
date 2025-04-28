@@ -28,18 +28,12 @@ const secret = ref(false)
           <div>资产账户</div>
           <div>{{ secret ? SECRET_TEXT : (totalAssets / 100).toFixed(2) }}</div>
         </div>
-        <div v-for="item in assetsAccount" :key="item.id" class="flex justify-between p-4">
-          <div>{{ item.name }}</div>
-          <div
-            :class="[
-              item.balance! > 0
-                ? 'text-emerald-500'
-                : item.balance! < 0 ? 'text-red-500' : 'text-black',
-            ]"
-          >
-            {{ secret ? SECRET_TEXT : (item.balance! / 100).toFixed(2) }}
-          </div>
-        </div>
+        <account-cell
+          v-for="item in assetsAccount"
+          :key="item.id"
+          :account="item"
+          :secret="secret"
+          :secret-text="SECRET_TEXT" />
       </div>
       <div v-if="creditAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
