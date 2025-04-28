@@ -17,13 +17,10 @@ function buildAccount(options: AccountDTO) {
 }
 
 export const useAccountStore = defineStore('account', () => {
-  const isLoaded = ref(false)
   const list = ref<Account[]>([])
   const map = computed(() => new Map(list.value.map((item) => [item.id, item])))
 
   async function loadAccounts() {
-    if (isLoaded.value) return
-    isLoaded.value = true
     list.value = (await DB.getAll('account')).map((item) => buildAccount(item))
   }
 
@@ -46,7 +43,7 @@ export const useAccountStore = defineStore('account', () => {
     const index = list.value.findIndex((item) => item.id === data.id)
     if (index !== -1) {
       list.value[index] = data
-      return DB.put('account', data)
+      return DB.put('account', data.structured())
     }
   }
 

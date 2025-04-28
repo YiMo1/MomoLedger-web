@@ -1,20 +1,33 @@
-import { type Category, DB } from '../database/index.ts'
+import { isUndefined } from 'es-toolkit'
+
+import { Category, type CategoryDTO, DB } from '../database/index.ts'
+
+import type { Except } from 'type-fest'
 
 export const useCategoryStore = defineStore('category', () => {
   const list = ref<Category[]>([])
-  const map = computed(() => new Map(list.value.map((item) => [item.id!, item])))
+  const map = computed(() => new Map(list.value.map((item) => [item.id, item])))
 
-  DB.getAll('category').then((data) => {
-    list.value = data
-  })
+  function buildCategory(options: CategoryDTO) {
+    const category = new Category({
+      ...options,
+      parent: isUndefined(options.parent) ? options.parent : map.value.get(options.parent),
+    })
+    category.parent && category.parent.addChild(category)
+    return category
+  }
 
-  async function createCategory(data: Omit<Category, 'id'>) {
-    const id = await DB.add('category', data)
-    list.value.push({ ...data, id })
+  async function loadCategorys() {
+    list.value = (await DB.getAll('category')).map((item) => buildCategory(item))
+  }
+
+  async function createCategory(options: Except<CategoryDTO, 'id'>) {
+    const id = await DB.add('category', options as CategoryDTO)
+    list.value.push(buildCategory({ ...options, id }))
     return id
   }
 
-  async function deleteCategory(id: NonNullable<Category['id']>) {
+  async function deleteCategory(id: Category['id']) {
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       list.value.splice(index, 1)
@@ -22,14 +35,13 @@ export const useCategoryStore = defineStore('category', () => {
     }
   }
 
-  async function updateCategory(data: Omit<Category, 'id'> & { id: Category['id'] }) {
+  async function updateCategory(data: Category) {
     const index = list.value.findIndex((item) => item.id === data.id)
     if (index !== -1) {
-      const target = { ...list.value[index], ...data }
-      list.value[index] = target
-      return DB.put('category', target, target.id)
+      list.value[index] = data
+      return DB.put('category', data.structured())
     }
   }
 
-  return { list, map, createCategory, deleteCategory, updateCategory }
+  return { list, map, createCategory, deleteCategory, updateCategory, loadCategorys }
 })

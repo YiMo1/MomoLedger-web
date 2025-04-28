@@ -2,7 +2,7 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
-import type { AccountDTO, BillDTO } from './table/index.ts'
+import type { AccountDTO, BillDTO, CategoryDTO } from './table/index.ts'
 
 export * from './table/index.ts'
 
@@ -10,13 +10,6 @@ export const DB_VERSION = 1
 export const DB_NAME = 'momo-ledger'
 
 export const DB = await initDB()
-
-export type Category = {
-  id?: number
-  text?: string
-  parent?: number
-  type?: '支出' | '收入' | '转账'
-}
 
 async function initDB() {
   const DB = await open()
@@ -65,7 +58,7 @@ export interface Database extends DBSchema {
       idx_statementDate: BillDTO['billTime']
     }
   }
-  category: { key: NonNullable<Category['id']>; value: Category }
+  category: { key: CategoryDTO['id']; value: CategoryDTO }
 }
 
 function upgradeDB(database: IDBPDatabase<Database>) {
