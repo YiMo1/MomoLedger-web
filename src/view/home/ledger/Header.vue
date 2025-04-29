@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-import { useAccountStore, useLedgerRecordStore } from '@/store/index.ts'
+import { useAccountStore, useBillStore } from '@/store/index.ts'
 
 const { list: account } = storeToRefs(useAccountStore())
 
@@ -15,8 +15,8 @@ const netAssets = computed(() => account.value.reduce((sum, item) => {
 }, 0))
 
 const now = dayjs()
-const { list: record } = storeToRefs(useLedgerRecordStore())
-const statistics = computed(() => record.value.reduce(
+const { list: bill } = storeToRefs(useBillStore())
+const statistics = computed(() => bill.value.reduce(
   (statistics, item, index) => {
     if (item.billTime.format('YYYY-MM') === now.format('YYYY-MM')) {
       if (item.type === '支出') {
@@ -27,7 +27,7 @@ const statistics = computed(() => record.value.reduce(
         statistics.balanceForThisMonth += item.amount ?? 0
       }
     }
-    if (index === record.value.length - 1) {
+    if (index === bill.value.length - 1) {
       statistics.dailyAverageExpenditure = statistics.expenditureForThisMonth / now.get('date')
     }
     return statistics

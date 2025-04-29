@@ -13,13 +13,13 @@ import { useAccountStore } from './account.ts'
 
 import type { DistributedOmit } from 'type-fest'
 
-export const useLedgerRecordStore = defineStore('bill', () => {
+export const useBillStore = defineStore('bill', () => {
   const { map: category } = storeToRefs(useCategoryStore())
   const { map: account } = storeToRefs(useAccountStore())
 
   const list = ref<Bill[]>([])
 
-  async function loadLedgerRecord() {
+  async function loadBill() {
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
     const index = store.index('idx_statementDate')
@@ -99,6 +99,6 @@ export const useLedgerRecordStore = defineStore('bill', () => {
     deleteLedgerRecord,
     updateLedgerRecord,
     list,
-    loadLedgerRecord,
+    loadBill,
   }
 })

@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 
 import {
   useAccountStore,
-  useLedgerRecordStore,
+  useBillStore,
 } from '@/store/index.ts'
 
 import type {
@@ -12,7 +12,7 @@ import type {
 } from 'vant/es'
 import type { Account } from '@/database'
 
-const recordStore = useLedgerRecordStore()
+const billStore = useBillStore()
 const accountStore = useAccountStore()
 
 const note = ref('')
@@ -48,7 +48,7 @@ function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
 }
 
 async function create() {
-  await recordStore.createLedgerRecord({
+  await billStore.createLedgerRecord({
     type: '转账',
     category: 85,
     note: note.value,

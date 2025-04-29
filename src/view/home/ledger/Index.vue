@@ -4,18 +4,18 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import HeaderComp from './Header.vue'
-import { useAccountStore, useLedgerRecordStore } from '@/store/index.ts'
+import { useAccountStore, useBillStore } from '@/store/index.ts'
 
 dayjs.extend(customParseFormat)
 
 const { list: account } = storeToRefs(useAccountStore())
-const { list: ledger } = storeToRefs(useLedgerRecordStore())
+const { list: bill } = storeToRefs(useBillStore())
 const router = useRouter()
 
 const ledgerGroup = computed(() => {
   const dateFormat = 'YYYY-MM-DD'
   return Object.entries(groupBy(
-    ledger.value,
+    bill.value,
     (item) => item.billTime.format(dateFormat),
   )).map(([date, list]) => [dayjs(date, dateFormat), list] as const)
 })

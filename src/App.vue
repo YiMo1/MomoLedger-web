@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useAccountStore, useCategoryStore, useLedgerRecordStore } from './store/index.ts'
+import { useAccountStore, useBillStore, useCategoryStore } from './store/index.ts'
 
 const isLoad = ref(false)
 
 onBeforeMount(() => {
   Promise.all([
     useAccountStore().loadAccounts(),
-    useLedgerRecordStore().loadLedgerRecord(),
+    useBillStore().loadBill(),
     useCategoryStore().loadCategorys(),
   ]).then(() => isLoad.value = true)
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLedgerRecordStore } from '@/store/bill'
+import { useBillStore } from '@/store/bill'
 
 import type { Bill } from '@/database/index.ts'
 
@@ -11,7 +11,7 @@ const categoryText = computed(() => {
   return props.bill.category.text
 })
 
-const store = useLedgerRecordStore()
+const store = useBillStore()
 </script>
 
 <template>

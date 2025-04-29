@@ -4,8 +4,8 @@ import { isUndefined } from 'es-toolkit'
 
 import {
   useAccountStore,
+  useBillStore,
   useCategoryStore,
-  useLedgerRecordStore,
 } from '@/store/index.ts'
 
 import type {
@@ -13,7 +13,7 @@ import type {
   PickerOption,
 } from 'vant/es'
 
-const recordStore = useLedgerRecordStore()
+const billStore = useBillStore()
 const accountStore = useAccountStore()
 
 const note = ref('')
@@ -71,7 +71,7 @@ function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) 
 }
 
 async function create() {
-  await recordStore.createLedgerRecord({
+  await billStore.createLedgerRecord({
     type: '支出',
     category: category.value!.id,
     note: note.value,
