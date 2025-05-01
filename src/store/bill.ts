@@ -22,7 +22,7 @@ export const useBillStore = defineStore('bill', () => {
   async function loadBill() {
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
-    const index = store.index('idx_statementDate')
+    const index = store.index('idx_billTime')
     let cursor = await index.openCursor(null, 'prev')
     while (cursor) {
       list.value.push(buildBill(cursor.value))

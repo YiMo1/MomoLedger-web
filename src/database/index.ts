@@ -55,7 +55,7 @@ export interface Database extends DBSchema {
     key: BillDTO['id']
     value: BillDTO
     indexes: {
-      idx_statementDate: BillDTO['billTime']
+      idx_billTime: BillDTO['billTime']
     }
   }
   category: { key: CategoryDTO['id']; value: CategoryDTO }
@@ -68,7 +68,7 @@ function upgradeDB(database: IDBPDatabase<Database>) {
     'bill',
     { keyPath: 'id', autoIncrement: true },
   )
-  ledgerRecordStore.createIndex('idx_statementDate', 'statementDate')
+  ledgerRecordStore.createIndex('idx_billTime', 'billTime')
 
   const categoryStore = database.createObjectStore(
     'category',
