@@ -6,7 +6,7 @@ defineProps<{ account: Account; secret: boolean; secretText?: string }>()
 </script>
 
 <template>
-  <div class="flex justify-between bg-white p-4">
+  <div class="flex justify-between bg-white p-4 active:bg-slate-50">
     <div>{{ account.name }}</div>
     <div
       :class="[

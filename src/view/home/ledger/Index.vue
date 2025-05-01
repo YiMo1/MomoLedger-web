@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { groupBy } from 'es-toolkit'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import HeaderComp from './Header.vue'
 import { useAccountStore, useBillStore } from '@/store/index.ts'
+import { useBillGroup } from '@/hooks/index.ts'
 
 dayjs.extend(customParseFormat)
 
@@ -12,13 +12,7 @@ const { list: account } = storeToRefs(useAccountStore())
 const { list: bill } = storeToRefs(useBillStore())
 const router = useRouter()
 
-const ledgerGroup = computed(() => {
-  const dateFormat = 'YYYY-MM-DD'
-  return Object.entries(groupBy(
-    bill.value,
-    (item) => item.billTime.format(dateFormat),
-  )).map(([date, list]) => [dayjs(date, dateFormat), list] as const)
-})
+const billGroup = useBillGroup(bill)
 
 function addNewRecord() {
   if (account.value.length < 1) {
@@ -46,9 +40,9 @@ defineExpose({ addNewRecord })
       </van-button>
       <van-space direction="vertical" fill>
         <bill-cell-group
-          v-for="([date, ledgers]) in ledgerGroup"
+          v-for="([date, bills]) in billGroup"
           :key="date.unix()"
-          :data="ledgers"
+          :data="bills"
           :date="date" />
       </van-space>
     </div>

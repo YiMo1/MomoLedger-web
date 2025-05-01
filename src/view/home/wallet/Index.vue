@@ -33,25 +33,20 @@ const secret = ref(false)
           :key="item.id"
           :account="item"
           :secret="secret"
-          :secret-text="SECRET_TEXT" />
+          :secret-text="SECRET_TEXT"
+          @click="$router.push(`/account_detail/${item.id}`)" />
       </div>
       <div v-if="creditAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
           <div>信贷账户</div>
           <div>{{ secret ? SECRET_TEXT : (totalDebt / 100).toFixed(2) }}</div>
         </div>
-        <div v-for="item in creditAccount" :key="item.id" class="flex justify-between p-4">
-          <div>{{ item.name }}</div>
-          <div
-            :class="[
-              item.debt! > 0
-                ? 'text-emerald-500'
-                : item.debt! < 0 ? 'text-red-500' : 'text-black',
-            ]"
-          >
-            {{ secret ? SECRET_TEXT : (item.debt! / 100).toFixed(2) }}
-          </div>
-        </div>
+        <account-cell
+          v-for="item in creditAccount" :key="item.id"
+          :account="item"
+          :secret="secret"
+          :secret-text="SECRET_TEXT"
+          @click="$router.push(`/account_detail/${item.id}`)" />
       </div>
     </div>
   </div>
