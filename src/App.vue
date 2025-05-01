@@ -6,9 +6,8 @@ const isLoad = ref(false)
 onBeforeMount(() => {
   Promise.all([
     useAccountStore().loadAccounts(),
-    useBillStore().loadBill(),
     useCategoryStore().loadCategorys(),
-  ]).then(() => isLoad.value = true)
+  ]).then(() => useBillStore().loadBill()).then(() => isLoad.value = true)
 })
 </script>
 
