@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import EyeIcon from '@/assets/icon/眼睛.svg?component'
-import CloseEyeIcon from '@/assets/icon/眼睛_闭.svg?component'
 import { useAccountStore } from '@/store/account.ts'
 
 const secret = defineModel<boolean>('secret', { required: true })
@@ -32,8 +30,11 @@ const show = ref(false)
     <div class="flex-1">
       <div class="flex items-center">
         <span class="mr-3 text-sm text-gray-600">净资产(元)</span>
-        <eye-icon v-if="!secret" class="size-5 fill-gray-600" @click="secret = !secret" />
-        <close-eye-icon v-else class="size-5 fill-gray-600" @click="secret = !secret" />
+        <van-icon
+          :name="secret ? 'closed-eye' : 'eye-o'"
+          size="20px"
+          color="#4b5563"
+          @click="secret = !secret" />
       </div>
       <div class="mt-5 text-xl font-bold text-emerald-500">
         {{ secret ? secretText : (assets.net / 100).toFixed(2) }}
