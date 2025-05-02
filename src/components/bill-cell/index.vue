@@ -20,7 +20,7 @@ const store = useBillStore()
       <div class="flex justify-between text-base">
         <div class="flex items-center text-gray-900">
           <span class="mr-1">{{ categoryText }}</span>
-          <van-tag v-if="bill.type === '支出' && bill.discount !== 0" plain color="#10b981">
+          <van-tag v-if="bill.type === '支出' && bill.discount !== 0" plain type="primary">
             惠{{ bill.discount / 100 }}
           </van-tag>
         </div>

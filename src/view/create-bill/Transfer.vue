@@ -91,7 +91,7 @@ defineExpose({ create })
     is-link
     readonly
     :rules="[{ required: true, message: '请选择账单日期' }]"
-    @click=" showPopup = 'statementDate'" />
+    @click="showPopup = 'statementDate'" />
   <van-field
     v-model.number="commission"
     type="number"
@@ -123,7 +123,7 @@ defineExpose({ create })
       :tabs="['选择日期', '选择时间']"
       next-step-text="下一步"
       @confirm="onStatementDateConfirm"
-      @cancel=" showPopup = undefined"
+      @cancel="showPopup = undefined"
     >
       <van-date-picker v-model="currentDate" />
       <van-time-picker v-model="currentTime" />

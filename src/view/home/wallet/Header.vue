@@ -28,12 +28,11 @@ const show = ref(false)
 <template>
   <div class="relative flex rounded bg-emerald-100 p-4">
     <div class="flex-1">
-      <div class="flex items-center">
-        <span class="mr-3 text-sm text-gray-600">净资产(元)</span>
+      <div class="flex items-center text-gray-600">
+        <span class="mr-3 text-sm">净资产(元)</span>
         <van-icon
           :name="secret ? 'closed-eye' : 'eye-o'"
           size="20px"
-          color="#4b5563"
           @click="secret = !secret" />
       </div>
       <div class="mt-5 text-xl font-bold text-emerald-500">
