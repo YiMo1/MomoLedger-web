@@ -24,9 +24,9 @@ export const useAccountStore = defineStore('account', () => {
     list.value = (await DB.getAll('account')).map((item) => buildAccount(item))
   }
 
-  async function createAccount(options: DistributedOmit<AccountDTO, 'id'>) {
+  async function createAccount(options: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
     const id = await DB.add('account', options as AccountDTO)
-    const account = buildAccount({ ...options, id })
+    const account = buildAccount({ ...options, id, createTime: Date.now() })
     list.value.push(account)
     return account
   }

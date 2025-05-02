@@ -8,7 +8,7 @@ import type { Data, Store } from '../utils.ts'
 interface BillOptions {
   id: number
   note: string
-  createTime: dayjs.ConfigType
+  createTime?: dayjs.ConfigType
   billTime: dayjs.ConfigType
   amount: number
   category: Category
