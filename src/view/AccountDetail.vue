@@ -28,6 +28,8 @@ const billGroup = useBillGroup(bill)
   <van-nav-bar
     :title="account?.name"
     left-arrow
+    right-text="编辑"
+    @click-right="$router.push(`/account/edit/${account?.id}`)"
     @click-left="$router.back" />
   <div class="m-4 rounded bg-emerald-600 p-4 text-white">
     <template v-if="account?.type === '资产'">

@@ -6,7 +6,7 @@ import type { FormInstance } from 'vant/es'
 
 const router = useRouter()
 const route = useRoute()
-const accountStore = useAccountStore()
+const store = useAccountStore()
 
 const type = computed<Account['type']>(() => route.query.accountType === '信贷账户'
   ? '信贷'
@@ -28,7 +28,7 @@ async function createAccount() {
   try { await formRel.value?.validate() }
   catch { return }
 
-  let options: Parameters<typeof accountStore.createAccount>[0]
+  let options: Parameters<typeof store.createAccount>[0]
   switch (type.value) {
     case '信贷': {
       options = {
@@ -51,7 +51,7 @@ async function createAccount() {
     }
   }
 
-  await accountStore.createAccount(options)
+  await store.createAccount(options)
   router.back()
 }
 </script>

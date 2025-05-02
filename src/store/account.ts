@@ -1,3 +1,5 @@
+import { merge, pick } from 'es-toolkit'
+
 import {
   type Account,
   type AccountDTO,
@@ -6,7 +8,7 @@ import {
   DB,
 } from '../database/index.ts'
 
-import type { DistributedOmit } from 'type-fest'
+import type { DistributedOmit, SetRequired } from 'type-fest'
 
 function buildAccount(options: AccountDTO) {
   switch (options.type) {
@@ -42,12 +44,16 @@ export const useAccountStore = defineStore('account', () => {
     }
   }
 
-  function updateAccount(data: Account) {
-    const index = list.value.findIndex((item) => item.id === data.id)
-    if (index !== -1) {
-      list.value[index] = data
-      return DB.put('account', data.structured())
+  function updateAccount(options: SetRequired<Partial<AccountDTO>, 'id' | 'type'>) {
+    const account = map.value.get(options.id)
+    if (!account) return
+    if (account.type === '信贷' && options.type === '信贷') {
+      merge(account, pick(options, ['name', 'debt', 'limit', 'note']))
     }
+    if (account.type === '资产' && options.type === '资产') {
+      merge(account, pick(options, ['name', 'balance', 'note']))
+    }
+    return DB.put('account', account.structured())
   }
 
   return { list, map, createAccount, deleteAccount, updateAccount, loadAccounts }
