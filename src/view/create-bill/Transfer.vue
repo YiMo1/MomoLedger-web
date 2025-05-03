@@ -7,6 +7,7 @@ import {
 } from '@/store/index.ts'
 
 import type {
+  FormInstance,
   PickerConfirmEventParams,
   PickerOption,
 } from 'vant/es'
@@ -47,7 +48,11 @@ function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
   showPopup.value = undefined
 }
 
+const formRef = ref<FormInstance>()
+const router = useRouter()
 async function create() {
+  try { await formRef.value!.validate() }
+  catch { return }
   await billStore.createLedgerRecord({
     type: '转账',
     category: 85,
@@ -58,51 +63,53 @@ async function create() {
     commission: Math.round((commission.value ?? 0) * 100),
     billTime: billTime.value.valueOf(),
   })
+  router.back()
 }
 
 defineExpose({ create })
 </script>
 
 <template>
-  <van-field
-    :model-value="transferOutAccount?.name"
-    label="转出账户"
-    is-link
-    readonly
-    :rules="[{ required: true, message: '请选择转出账户' }]"
-    @click="showPopup = 'transferOutAccount'" />
-  <van-field
-    :model-value="transferToAccount?.name"
-    label="转入账户"
-    is-link
-    readonly
-    :rules="[{ required: true, message: '请选择转入账户' }]"
-    @click="showPopup = 'transferToAccount'" />
-  <van-field
-    v-model.number="expenses"
-    type="number"
-    label="金额"
-    :min="0"
-    placeholder="请输入金额"
-    :rules="[{ required: true, message: '请输入金额' }]" />
-  <van-field
-    :model-value="billTime.format('YYYY-MM-DD HH:mm')"
-    label="账单日期"
-    is-link
-    readonly
-    :rules="[{ required: true, message: '请选择账单日期' }]"
-    @click="showPopup = 'statementDate'" />
-  <van-field
-    v-model.number="commission"
-    type="number"
-    label="手续费"
-    :min="0"
-    placeholder="请输入手续费" />
-  <van-field
-    v-model="note"
-    label="备注"
-    placeholder="添加备注" />
-
+  <van-form ref="formRef" validate-trigger="onSubmit" label-width="5em">
+    <van-field
+      :model-value="transferOutAccount?.name"
+      label="转出账户"
+      is-link
+      readonly
+      :rules="[{ required: true, message: '请选择转出账户' }]"
+      @click="showPopup = 'transferOutAccount'" />
+    <van-field
+      :model-value="transferToAccount?.name"
+      label="转入账户"
+      is-link
+      readonly
+      :rules="[{ required: true, message: '请选择转入账户' }]"
+      @click="showPopup = 'transferToAccount'" />
+    <van-field
+      v-model.number="expenses"
+      type="number"
+      label="金额"
+      :min="0"
+      placeholder="请输入金额"
+      :rules="[{ required: true, message: '请输入金额' }]" />
+    <van-field
+      :model-value="billTime.format('YYYY-MM-DD HH:mm')"
+      label="账单日期"
+      is-link
+      readonly
+      :rules="[{ required: true, message: '请选择账单日期' }]"
+      @click="showPopup = 'statementDate'" />
+    <van-field
+      v-model.number="commission"
+      type="number"
+      label="手续费"
+      :min="0"
+      placeholder="请输入手续费" />
+    <van-field
+      v-model="note"
+      label="备注"
+      placeholder="添加备注" />
+  </van-form>
   <van-popup
     :show="!!showPopup"
     destroy-on-close

@@ -9,6 +9,7 @@ import {
 } from '@/store/index.ts'
 
 import type {
+  FormInstance,
   PickerColumn,
   PickerConfirmEventParams,
   PickerOption,
@@ -63,7 +64,11 @@ function onCategoryPickerConfrim({ selectedOptions }: PickerConfirmEventParams) 
   showPopup.value = undefined
 }
 
+const formRef = ref<FormInstance>()
+const router = useRouter()
 async function create() {
+  try { await formRef.value!.validate() }
+  catch { return }
   await billStore.createLedgerRecord({
     type: '收入',
     category: category.value!.id,
@@ -73,45 +78,48 @@ async function create() {
     commission: Math.round((commission.value ?? 0) * 100),
     billTime: billTime.value.valueOf(),
   })
+  router.back()
 }
 
 defineExpose({ create })
 </script>
 
 <template>
-  <van-field
-    v-model="account.name"
-    label="账户"
-    is-link
-    readonly
-    :rules="[{ required: true, message: '请选择账户' }]"
-    @click="showPopup = 'account'" />
-  <van-field
-    v-model.number="expenses"
-    type="number"
-    label="金额"
-    :min="0"
-    placeholder="请输入金额"
-    :rules="[{ required: true, message: '请输入金额' }]" />
-  <van-field
-    :model-value="billTime.format('YYYY-MM-DD HH:mm')"
-    label="账单日期"
-    is-link
-    readonly
-    :rules="[{ required: true, message: '请选择账单日期' }]"
-    @click="showPopup = 'statementDate'" />
-  <van-field
-    :model-value="category?.text"
-    label="分类"
-    is-link
-    readonly
-    placeholder="请选择账单分类"
-    :rules="[{ required: true, message: '请选择账单分类' }]"
-    @click="showPopup = 'category'" />
-  <van-field
-    v-model="note"
-    label="备注"
-    placeholder="添加备注" />
+  <van-form ref="formRef" validate-trigger="onSubmit" label-width="5em">
+    <van-field
+      v-model="account.name"
+      label="账户"
+      is-link
+      readonly
+      :rules="[{ required: true, message: '请选择账户' }]"
+      @click="showPopup = 'account'" />
+    <van-field
+      v-model.number="expenses"
+      type="number"
+      label="金额"
+      :min="0"
+      placeholder="请输入金额"
+      :rules="[{ required: true, message: '请输入金额' }]" />
+    <van-field
+      :model-value="billTime.format('YYYY-MM-DD HH:mm')"
+      label="账单日期"
+      is-link
+      readonly
+      :rules="[{ required: true, message: '请选择账单日期' }]"
+      @click="showPopup = 'statementDate'" />
+    <van-field
+      :model-value="category?.text"
+      label="分类"
+      is-link
+      readonly
+      placeholder="请选择账单分类"
+      :rules="[{ required: true, message: '请选择账单分类' }]"
+      @click="showPopup = 'category'" />
+    <van-field
+      v-model="note"
+      label="备注"
+      placeholder="添加备注" />
+  </van-form>
 
   <van-popup
     :show="!!showPopup"
