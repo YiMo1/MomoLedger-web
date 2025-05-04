@@ -8,7 +8,6 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
-import svgLoader from 'vite-svg-loader'
 
 function optimizeVant() {
   const includes = readdirSync('node_modules/vant/es').filter((item) => ![
@@ -33,7 +32,6 @@ export default defineConfig({
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
     }),
     Components({ dts: false, resolvers: [VantResolver()], globs: 'src/components/*/index.ts' }),
-    svgLoader({ defaultImport: 'url' }),
   ],
   css: {
     postcss: {

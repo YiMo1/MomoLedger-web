@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'iconfont';
+  src: url('/iconfont.woff2') format('woff2');
+}
+
+.iconfont {
+  font-family: 'iconfont';
+  font-style: normal;
+}
+
+.iconfont-rili:before {
+  content: '\e64a';
+}
+
+.iconfont-qianbao:before {
+  content: '\e64b';
+}
+
+.iconfont-bingtu:before {
+  content: '\e6b5';
+}
+
+.iconfont-chilun:before {
+  content: '\e897';
+}
+
+.iconfont-home-04:before {
+  content: '\e611';
+}

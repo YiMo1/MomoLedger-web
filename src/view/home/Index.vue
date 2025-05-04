@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import WalletIcon from '../../assets/icon/钱包.svg?component'
-import LedgerIcon from '../../assets/icon/家.svg?component'
 import Wallet from './wallet/Index.vue'
 import Ledger from './ledger/Index.vue'
 
@@ -33,17 +31,13 @@ function onBubbleClick() {
     <van-tab><ledger ref="ledgerRef" /></van-tab>
     <van-tab><wallet /></van-tab>
   </van-tabs>
-  <van-tabbar v-model="activeTabbar" style="--van-tabbar-item-icon-margin-bottom: 0">
-    <van-tabbar-item>
-      <template #icon="{ active }">
-        <ledger-icon :class="['size-7', active ? 'fill-emerald-600' : 'fill-gray-500']" />
-      </template>
-    </van-tabbar-item>
-    <van-tabbar-item>
-      <template #icon="{ active: isActive }">
-        <wallet-icon :class="['size-7', isActive ? 'fill-emerald-600' : 'fill-gray-500']" />
-      </template>
-    </van-tabbar-item>
+  <van-tabbar
+    v-model="activeTabbar"
+    style="--van-tabbar-item-icon-margin-bottom: 0; --van-tabbar-item-icon-size: 28px"
+    inactive-color="#6b7280"
+  >
+    <van-tabbar-item icon="home-04" icon-prefix="iconfont" />
+    <van-tabbar-item icon="qianbao" icon-prefix="iconfont" />
   </van-tabbar>
   <van-floating-bubble
     style="
