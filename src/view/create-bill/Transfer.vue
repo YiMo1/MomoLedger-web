@@ -20,7 +20,7 @@ const note = ref('')
 const expenses = ref(0)
 const commission = ref<number>()
 
-const showPopup = ref<'transferOutAccount' | 'statementDate' | 'transferToAccount'>()
+const showPopup = ref<'transferOutAccount' | 'billTime' | 'transferToAccount'>()
 
 const accountColumns = computed(() => accountStore.list.map<PickerOption>((item) => {
   return { text: item.name, value: item.id }
@@ -39,7 +39,7 @@ function onAccountPickerConfrim({ selectedValues }: PickerConfirmEventParams) {
 const billTime = ref(dayjs())
 const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
 const currentTime = ref(billTime.value.format('HH-mm').split('-'))
-function onStatementDateConfirm(values: PickerConfirmEventParams[]) {
+function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].
     map(Number) as [number, number, number, number, number]
@@ -98,7 +98,7 @@ defineExpose({ create })
       is-link
       readonly
       :rules="[{ required: true, message: '请选择账单日期' }]"
-      @click="showPopup = 'statementDate'" />
+      @click="showPopup = 'billTime'" />
     <van-field
       v-model.number="commission"
       type="number"
@@ -125,11 +125,11 @@ defineExpose({ create })
       @cancel="showPopup = undefined"
       @confirm="onAccountPickerConfrim" />
     <van-picker-group
-      v-if="showPopup === 'statementDate'"
+      v-if="showPopup === 'billTime'"
       title="账单日期"
       :tabs="['选择日期', '选择时间']"
       next-step-text="下一步"
-      @confirm="onStatementDateConfirm"
+      @confirm="onBillTimeConfirm"
       @cancel="showPopup = undefined"
     >
       <van-date-picker v-model="currentDate" />
