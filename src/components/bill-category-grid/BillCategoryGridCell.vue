@@ -18,7 +18,7 @@ const offset: [number, number] = [-6, -8]
 </script>
 
 <template>
-  <div class="inline-block p-1 text-center">
+  <div class="inline-block py-1 text-center">
     <van-badge
       position="bottom-right"
       :offset="offset"
@@ -48,6 +48,6 @@ const offset: [number, number] = [-6, -8]
           class="size-[18px] rounded-full bg-white p-0.5" />
       </template>
     </van-badge>
-    <div :class="['mt-1', active ? 'text-black' : 'text-[#878787]']">{{ text }}</div>
+    <div :class="['mt-1 text-nowrap', active ? 'text-black' : 'text-[#878787]']">{{ text }}</div>
   </div>
 </template>

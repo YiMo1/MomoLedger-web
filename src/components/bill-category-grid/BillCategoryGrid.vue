@@ -45,7 +45,12 @@ const rows = computed(() => chunk(props.list, COLUMN_COUNT))
               'rounded-full p-2',
               value[1] === category ? 'bg-[#acd5c7]' : 'bg-[#f4f4f4]',
             ]" />
-          <div :class="['mt-1', value[1] === category ? 'text-black' : 'text-[#878787]']">
+          <div
+            :class="[
+              'mt-1 text-nowrap',
+              value[1] === category ? 'text-black' : 'text-[#878787]',
+            ]"
+          >
             {{ category.text }}
           </div>
         </div>
