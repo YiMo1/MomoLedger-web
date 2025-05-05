@@ -6,6 +6,7 @@
 .iconfont {
   font-family: 'iconfont';
   font-style: normal;
+  line-height: 1;
 }
 
 .iconfont-backspace:before {
