@@ -73,7 +73,9 @@ async function submit() {
       })
       break
     }
-    default: { const _: never = billType.value }
+    default: {
+      const _: never = billType.value
+    }
   }
   router.back()
 }
@@ -93,8 +95,13 @@ const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
 const currentTime = ref(billTime.value.format('HH-mm').split('-'))
 function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
-  const args = [...dateValues, ...timeValues].
-    map(Number) as [number, number, number, number, number]
+  const args = [...dateValues, ...timeValues].map(Number) as [
+    number,
+    number,
+    number,
+    number,
+    number,
+  ]
   args[1] -= 1
   billTime.value = dayjs(new Date(...args))
   showPopup.value = false
@@ -127,9 +134,15 @@ const accountActions = computed(() => accountStore.list.map<Action>((account) =>
 }))
 const onAccountSheetSelect = ref<(action: Action, index: number) => void>(noop)
 const ACCOUNT_SELECT_STRATEGY_MAP = {
-  FROM_ACCOUNT({ value }: Action) { fromAccount.value = value },
-  TO_ACCOUNT({ value }: Action) { toAccount.value = value },
-  PAY_ACCOUNT({ value }: Action) { payAccount.value = value },
+  FROM_ACCOUNT({ value }: Action) {
+    fromAccount.value = value
+  },
+  TO_ACCOUNT({ value }: Action) {
+    toAccount.value = value
+  },
+  PAY_ACCOUNT({ value }: Action) {
+    payAccount.value = value
+  },
 } as const
 function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_MAP) {
   accountActionSheetShow.value = true
@@ -141,9 +154,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
   <div class="flex h-screen flex-col bg-white">
     <van-nav-bar
       style="--van-nav-bar-arrow-size: 20px"
-      fixed
       left-arrow
-      placeholder
       safe-area-inset-top
       @click-left="router.back"
     >
@@ -158,44 +169,42 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
       </template>
     </van-nav-bar>
 
-    <div class="flex-1 overflow-y-auto">
-      <van-tabs
-        v-model:active="billType"
-        :show-header="false"
-        swipeable
-        class="category-tabs h-full py-4"
-      >
-        <van-tab name="支出">
-          <bill-category-grid v-model="expensesCategory" :list="expensesCategoryList" leave2 />
-        </van-tab>
-        <van-tab name="收入">
-          <bill-category-grid v-model="incomeCategory" :list="incomeCategoryList" />
-        </van-tab>
-        <van-tab name="转账">
-          <div class="p-4">
-            <van-cell
-              :value="fromAccount?.name"
-              class="rounded border border-gray-300 after:content-none"
-              style="--van-cell-icon-size: 22px;"
-              title="转出账户"
-              icon="balance-pay"
-              is-link
-              @click="openAccountActionSheet('FROM_ACCOUNT')" />
-            <div class="my-2 text-center">
-              <van-icon name="sort" size="28px" />
-            </div>
-            <van-cell
-              :value="toAccount?.name"
-              class="rounded border border-gray-300 after:content-none"
-              style="--van-cell-icon-size: 22px;"
-              title="转入账户"
-              icon="balance-pay"
-              is-link
-              @click="openAccountActionSheet('TO_ACCOUNT')" />
+    <van-tabs
+      v-model:active="billType"
+      :show-header="false"
+      swipeable
+      class="category-tabs h-0 flex-1 overflow-y-auto"
+    >
+      <van-tab name="支出">
+        <bill-category-grid v-model="expensesCategory" :list="expensesCategoryList" leave2 />
+      </van-tab>
+      <van-tab name="收入">
+        <bill-category-grid v-model="incomeCategory" :list="incomeCategoryList" />
+      </van-tab>
+      <van-tab name="转账">
+        <div class="p-4">
+          <van-cell
+            :value="fromAccount?.name"
+            class="rounded border border-gray-300 after:content-none"
+            style="--van-cell-icon-size: 22px"
+            title="转出账户"
+            icon="balance-pay"
+            is-link
+            @click="openAccountActionSheet('FROM_ACCOUNT')" />
+          <div class="my-2 text-center">
+            <van-icon name="sort" size="28px" />
           </div>
-        </van-tab>
-      </van-tabs>
-    </div>
+          <van-cell
+            :value="toAccount?.name"
+            class="rounded border border-gray-300 after:content-none"
+            style="--van-cell-icon-size: 22px"
+            title="转入账户"
+            icon="balance-pay"
+            is-link
+            @click="openAccountActionSheet('TO_ACCOUNT')" />
+        </div>
+      </van-tab>
+    </van-tabs>
 
     <van-field
       v-model="note"
@@ -220,7 +229,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
       </template>
     </van-field>
 
-    <div class="items-centeroverflow-auto flex">
+    <div class="z-10 flex items-center overflow-auto bg-white">
       <div class="flex h-12 items-center gap-1 px-4 leading-none" @click="showPopup = true">
         <van-icon name="rili" class-prefix="iconfont" size="22px" />
         <span>{{ displayBillTime }}</span>
@@ -288,13 +297,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
     teleport="body"
     @select="onAccountSheetSelect" />
 
-  <van-popup
-    v-model:show="showPopup"
-    destroy-on-close
-    round
-    position="bottom"
-    teleport="body"
-  >
+  <van-popup v-model:show="showPopup" destroy-on-close round position="bottom" teleport="body">
     <van-picker-group
       title="账单日期"
       :tabs="['选择日期', '选择时间']"
@@ -310,6 +313,12 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
 
 <style>
 .category-tabs .van-tabs__content {
-  @apply h-full
+  @apply min-h-full flex flex-col;
+}
+.category-tabs .van-tabs__content .van-swipe {
+  @apply flex-1 overflow-y-auto;
+}
+.category-tabs .van-tabs__content .van-swipe .van-swipe__track {
+  @apply py-4 min-h-full !h-auto;
 }
 </style>
