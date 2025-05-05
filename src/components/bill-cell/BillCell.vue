@@ -39,7 +39,7 @@ const store = useBillStore()
           >
             <span v-if="bill.type === '支出'">-</span>
             <span v-else-if="bill.type === '收入'">+</span>
-            <span>{{ (bill.amount / 100).toFixed(2) }}</span>
+            <span>{{ bill.displayAmount }}</span>
           </div>
         </div>
         <div class="flex justify-between text-xs leading-5">

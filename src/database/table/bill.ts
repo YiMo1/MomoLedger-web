@@ -23,6 +23,8 @@ abstract class Bill implements Data {
   category: Category
   abstract type: '支出' | '收入' | '转账'
 
+  get displayAmount() { return (this.amount / 100).toFixed(2) }
+
   constructor({ amount, createTime, id, note, billTime, category }: BillOptions) {
     this.id = id
     this.note = note
