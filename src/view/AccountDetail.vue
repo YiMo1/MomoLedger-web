@@ -34,13 +34,13 @@ const billGroup = useBillGroup(bill)
   <div class="m-4 rounded bg-emerald-600 p-4 text-white">
     <template v-if="account?.type === '资产'">
       <div>账户余额</div>
-      <div class="text-xl font-bold">{{ (account.balance / 100).toFixed(2) }}</div>
+      <div class="text-xl font-bold">{{ account.displayBalance }}</div>
     </template>
     <template v-else-if="account?.type === '信贷'">
       <div>剩余欠款</div>
-      <div class="text-xl font-bold">{{ (account.debt / 100).toFixed(2) }}</div>
+      <div class="text-xl font-bold">{{ account.displayDebt }}</div>
       <div class="mt-2 flex justify-between">
-        <div>总额度：{{ (account.limit / 100).toFixed(2) }}</div>
+        <div>总额度：{{ account.displayLimit }}</div>
         <div>剩余额度：{{ (Math.max((account.limit - account.debt) / 100, 0)).toFixed(2) }}</div>
       </div>
     </template>

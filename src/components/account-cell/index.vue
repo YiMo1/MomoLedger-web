@@ -19,10 +19,10 @@ defineProps<{ account: Account; secret: boolean; secretText?: string }>()
     >
       <template v-if="secret">{{ secretText }}</template>
       <template v-else-if="account.type === '信贷'">
-        {{ `-${(account.debt / 100).toFixed(2)}` }}
+        {{ `-${account.displayDebt}` }}
       </template>
       <template v-else-if="account.type === '资产'">
-        {{ (account.balance / 100).toFixed(2) }}
+        {{ account.displayBalance }}
       </template>
     </div>
   </div>
