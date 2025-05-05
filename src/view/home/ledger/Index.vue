@@ -33,7 +33,7 @@ defineExpose({ addNewRecord })
         block
         type="primary"
         icon="balance-list-o"
-        class="mb-3 mt-4 border-emerald-500 bg-emerald-500"
+        class="mb-3 mt-4"
         @click="addNewRecord"
       >
         添加一条新记账
