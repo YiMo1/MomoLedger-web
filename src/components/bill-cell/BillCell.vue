@@ -15,50 +15,51 @@ const store = useBillStore()
 
 <template>
   <van-swipe-cell stop-propagation>
-    <div class="flex gap-2 bg-white px-3 py-2">
-      <van-icon
-        class-prefix="iconfont"
-        :name="bill.category.icon"
-        size="30px" />
-      <div class="inline-block flex-1">
-        <div class="flex justify-between text-base">
-          <div class="flex items-center text-gray-900">
-            <span class="mr-2">{{ categoryText }}</span>
-            <van-tag
-              v-if="bill.type === '支出' && bill.discount !== 0"
-              plain
-              type="primary"
-              class="py-0.5"
-            >
-              惠{{ bill.discount / 100 }}
-            </van-tag>
-          </div>
-          <div
-            :class="[
-              'font-bold', {
-                'text-black': bill.type === '转账',
-                'text-red-500': bill.type === '支出',
-                'text-emerald-500': bill.type === '收入',
-              },
-            ]"
+    <van-cell
+      style="--van-cell-icon-size: 28px; --van-cell-line-height: 20px;"
+      icon-prefix="iconfont"
+      class="after:hidden"
+      title-class="ml-1"
+      :icon="bill.category.icon"
+      :label="bill.note"
+    >
+      <template #title>
+        <div>
+          <span class="mr-2">{{ categoryText }}</span>
+          <van-tag
+            v-if="bill.type === '支出' && bill.discount !== 0"
+            style="--van-tag-font-size: 10px;--van-tag-radius: 4px;"
+            plain
+            type="primary"
+            class="py-0.5"
           >
-            <span v-if="bill.type === '支出'">-</span>
-            <span v-else-if="bill.type === '收入'">+</span>
-            <span>{{ bill.displayAmount }}</span>
-          </div>
+            惠{{ bill.discount / 100 }}
+          </van-tag>
         </div>
-        <div class="flex justify-between text-xs leading-5">
-          <div>{{ bill.billTime?.format('HH:mm') }}</div>
-          <div v-if="bill.type === '支出' || bill.type === '收入'">{{ bill.account.name }}</div>
-          <div v-else-if="bill.type === '转账'">
-            <span>{{ bill.paymentAccount.name }}</span>
-            <span>→</span>
-            <span>{{ bill.receivingAccount.name }}</span>
-          </div>
+        <div class="text-xs/5 text-gray-500">{{ bill.billTime.format('HH:mm') }}</div>
+      </template>
+      <template #value>
+        <div
+          :class="[
+            'font-bold', {
+              'text-black': bill.type === '转账',
+              'text-red-500': bill.type === '支出',
+              'text-emerald-500': bill.type === '收入',
+            },
+          ]"
+        >
+          <span v-if="bill.type === '支出'">-</span>
+          <span v-else-if="bill.type === '收入'">+</span>
+          <span>{{ bill.displayAmount }}</span>
         </div>
-        <div v-if="bill.note" class="text-xs leading-5">{{ bill.note }}</div>
-      </div>
-    </div>
+        <div v-if="bill.type === '支出' || bill.type === '收入'">{{ bill.account.name }}</div>
+        <div v-else-if="bill.type === '转账'">
+          <span>{{ bill.paymentAccount.name }}</span>
+          <span>→</span>
+          <span>{{ bill.receivingAccount.name }}</span>
+        </div>
+      </template>
+    </van-cell>
     <template #right>
       <van-button
         class="h-full"
