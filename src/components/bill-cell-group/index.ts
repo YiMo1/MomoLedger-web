@@ -1,4 +1,4 @@
-import SFC from './index.vue'
+import SFC from './BillCellGroup.vue'
 
 export default SFC
 

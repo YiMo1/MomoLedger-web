@@ -10,7 +10,7 @@ const accountId = computed(() => {
   return parseInt(Array.isArray(id) ? id[0] : id)
 })
 const account = computed(() => accountStore.map.get(accountId.value))
-const bill = computed(() => billStore.list.filter((item) => {
+const billList = computed(() => billStore.list.filter((item) => {
   switch (item.type) {
     case '支出': { return item.account.id === account.value?.id }
     case '收入': { return item.account.id === account.value?.id }
@@ -21,7 +21,7 @@ const bill = computed(() => billStore.list.filter((item) => {
     default: { const never: never = item; return never }
   }
 }))
-const billGroup = useBillGroup(bill)
+const billGroup = useBillGroup(billList)
 </script>
 
 <template>
@@ -50,6 +50,9 @@ const billGroup = useBillGroup(bill)
       v-for="([date, bills]) in billGroup"
       :key="date.unix()"
       :data="bills"
-      :date="date" />
+      :date="date"
+    >
+      <bill-cell v-for="bill in bills" :key="bill.id" :bill="bill" />
+    </bill-cell-group>
   </van-space>
 </template>

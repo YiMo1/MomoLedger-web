@@ -9,10 +9,10 @@ import { useBillGroup } from '@/hooks/index.ts'
 dayjs.extend(customParseFormat)
 
 const { list: account } = storeToRefs(useAccountStore())
-const { list: bill } = storeToRefs(useBillStore())
+const { list: billList } = storeToRefs(useBillStore())
 const router = useRouter()
 
-const billGroup = useBillGroup(bill)
+const billGroup = useBillGroup(billList)
 
 function addNewRecord() {
   if (account.value.length < 1) {
@@ -43,7 +43,10 @@ defineExpose({ addNewRecord })
           v-for="([date, bills]) in billGroup"
           :key="date.unix()"
           :data="bills"
-          :date="date" />
+          :date="date"
+        >
+          <bill-cell v-for="bill in bills" :key="bill.id" :bill="bill" />
+        </bill-cell-group>
       </van-space>
     </div>
   </div>
