@@ -6,6 +6,7 @@ interface CategoryOptions {
   id: number
   text: string
   parent?: Category
+  icon?: string
 }
 
 export class Category implements Data {
@@ -13,16 +14,18 @@ export class Category implements Data {
   text: string
   parent?: Category
   children: Category[] = []
+  icon?: string
 
-  constructor({ id, text, parent }: CategoryOptions) {
+  constructor({ id, text, parent, icon }: CategoryOptions) {
     this.id = id
     this.text = text
     this.parent = parent
+    this.icon = icon
   }
 
   structured() {
     return {
-      ...pick(this, ['id', 'text']),
+      ...pick(this, ['id', 'text', 'icon']),
       ...{ parent: this.parent?.id } as { parent?: number },
     }
   }

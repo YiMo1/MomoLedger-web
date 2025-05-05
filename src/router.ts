@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAccountStore } from './store/index.ts'
 import CreateAccount from './view/CreateAccount.vue'
 import Home from './view/home/Index.vue'
-import CreateBill from './view/create-bill/Index.vue'
+import CreateBill from './view/create-bill/CreateBillView.vue'
 import AccountDetail from './view/AccountDetail.vue'
 import AccountEdit from './view/AccountEdit.vue'
 
