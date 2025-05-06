@@ -66,7 +66,7 @@ const store = useBillStore()
         square
         type="danger"
         text="删除"
-        @click="store.deleteLedgerRecord(bill.id)" />
+        @click="store.deleteBill(bill.id)" />
     </template>
   </van-swipe-cell>
 </template>

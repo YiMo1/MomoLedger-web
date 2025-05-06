@@ -31,11 +31,11 @@ async function submit() {
     amount: Number(Number(amount.value).toFixed(2)) * 100,
     billTime: billTime.value.valueOf(),
     discount: Number((discount.value ?? 0).toFixed(2)) * 100,
-  } satisfies Partial<Parameters<typeof billStore.createLedgerRecord>[0]>
+  } satisfies Partial<Parameters<typeof billStore.createBill>[0]>
   switch (billType.value) {
     case '支出': {
       const [leave1, leave2] = expensesCategory.value
-      await billStore.createLedgerRecord({
+      await billStore.createBill({
         ...options,
         type: '支出',
         account: payAccount.value.id,
@@ -45,7 +45,7 @@ async function submit() {
     }
     case '收入': {
       const [leave1, leave2] = expensesCategory.value
-      await billStore.createLedgerRecord({
+      await billStore.createBill({
         ...pick(options, ['amount', 'billTime', 'note']),
         type: '收入',
         account: payAccount.value.id,
@@ -63,7 +63,7 @@ async function submit() {
         showToast('请选择转出账户')
         return
       }
-      await billStore.createLedgerRecord({
+      await billStore.createBill({
         ...pick(options, ['amount', 'billTime', 'note']),
         type: '转账',
         category: 86,

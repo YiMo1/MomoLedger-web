@@ -58,7 +58,7 @@ export const useBillStore = defineStore('bill', () => {
     }
   }
 
-  async function createLedgerRecord(options: DistributedOmit<BillDTO, 'id' | 'createTime'>) {
+  async function createBill(options: DistributedOmit<BillDTO, 'id' | 'createTime'>) {
     const transaction = DB.transaction(['bill', 'account'], 'readwrite')
     const id = await transaction.objectStore('bill').add(options as BillDTO)
     const bill = buildBill({ ...options, id, createTime: Date.now() })
@@ -74,7 +74,7 @@ export const useBillStore = defineStore('bill', () => {
     return bill
   }
 
-  async function deleteLedgerRecord(id: BillDTO['id']) {
+  async function deleteBill(id: BillDTO['id']) {
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) {
       const bill = list.value[index]
@@ -86,7 +86,7 @@ export const useBillStore = defineStore('bill', () => {
     }
   }
 
-  async function updateLedgerRecord(bill: Bill) {
+  async function updateBill(bill: Bill) {
     const index = list.value.findIndex((item) => item.id === bill.id)
     if (index !== -1) {
       list.value[index] = bill
@@ -95,9 +95,9 @@ export const useBillStore = defineStore('bill', () => {
   }
 
   return {
-    createLedgerRecord,
-    deleteLedgerRecord,
-    updateLedgerRecord,
+    createBill,
+    deleteBill,
+    updateBill,
     list,
     loadBill,
   }
