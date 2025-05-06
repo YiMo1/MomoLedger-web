@@ -153,7 +153,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
 <template>
   <div class="flex h-screen flex-col bg-white">
     <van-nav-bar
-      style="--van-nav-bar-arrow-size: 20px"
+      style="--van-nav-bar-arrow-size: 26px"
       left-arrow
       safe-area-inset-top
       @click-left="router.back"
