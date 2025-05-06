@@ -27,7 +27,7 @@ const billStore = useBillStore()
 const router = useRouter()
 async function submit() {
   const options = {
-    note: note.value,
+    note: note.value || undefined,
     amount: Number(Number(amount.value).toFixed(2)) * 100,
     billTime: billTime.value.valueOf(),
     discount: Number((discount.value ?? 0).toFixed(2)) * 100,

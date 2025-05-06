@@ -7,7 +7,7 @@ import type { Data, Store } from '../utils.ts'
 
 interface BillOptions {
   id: number
-  note: string
+  note?: string
   createTime?: dayjs.ConfigType
   billTime: dayjs.ConfigType
   amount: number
@@ -16,7 +16,7 @@ interface BillOptions {
 
 abstract class Bill implements Data {
   readonly id: number
-  note: string
+  note?: string
   amount: number
   billTime: dayjs.Dayjs
   createTime: dayjs.Dayjs
