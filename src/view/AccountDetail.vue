@@ -52,7 +52,7 @@ const billGroup = useBillGroup(billList)
       :data="bills"
       :date="date"
     >
-      <bill-cell v-for="bill in bills" :key="bill.id" :bill="bill" />
+      <bill-swipe-cell v-for="bill in bills" :key="bill.id" :bill="bill" />
     </bill-cell-group>
   </van-space>
 </template>
