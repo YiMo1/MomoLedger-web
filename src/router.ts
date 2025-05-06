@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import { useAccountStore } from './store/index.ts'
+import { useAccountStore, useBillStore } from './store/index.ts'
 import CreateAccount from './view/CreateAccount.vue'
 import Home from './view/home/Index.vue'
 import CreateBill from './view/create-bill/CreateBillView.vue'
 import AccountDetail from './view/AccountDetail.vue'
 import AccountEdit from './view/AccountEdit.vue'
+import EditTransferBill from './view/EditTransferBill.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -26,6 +27,13 @@ export default createRouter({
       component: AccountEdit,
       beforeEnter(to) {
         if (!useAccountStore().map.has(Number(to.params.id))) return '/'
+      },
+    },
+    {
+      path: '/edit_transfer_bill/:id',
+      component: EditTransferBill,
+      beforeEnter(to) {
+        if (!useBillStore().map.has(Number(to.params.id))) return '/'
       },
     },
   ],

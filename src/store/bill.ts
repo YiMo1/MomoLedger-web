@@ -1,4 +1,5 @@
 import { sortedIndexBy } from 'es-toolkit/compat'
+import dayjs from 'dayjs'
 
 import {
   type Bill,
@@ -11,13 +12,14 @@ import {
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
 
-import type { DistributedOmit } from 'type-fest'
+import type { DistributedOmit, Except } from 'type-fest'
 
 export const useBillStore = defineStore('bill', () => {
   const { map: category } = storeToRefs(useCategoryStore())
   const { map: account } = storeToRefs(useAccountStore())
 
   const list = ref<Bill[]>([])
+  const map = computed(() => new Map(list.value.map((bill) => [bill.id, bill])))
 
   async function loadBill() {
     const transaction = DB.transaction('bill', 'readonly')
@@ -86,6 +88,23 @@ export const useBillStore = defineStore('bill', () => {
     }
   }
 
+  async function updateTransferBill(params:
+  Except<ReturnType<TransferBill['structured']>, 'createTime' | 'type' | 'category'>) {
+    const bill = map.value.get(params.id) as TransferBill
+    const transaction = DB.transaction(['account', 'bill'], 'readwrite')
+    const accountStore = transaction.objectStore('account')
+    bill.rollBack(accountStore)
+    bill.paymentAccount = account.value.get(params.paymentAccount)!
+    bill.receivingAccount = account.value.get(params.receivingAccount)!
+    bill.amount = params.amount
+    bill.execute(accountStore)
+    bill.note = params.note
+    bill.billTime = dayjs(params.billTime)
+    bill.commission = params.commission
+    transaction.objectStore('bill').put(bill.structured())
+    return await transaction.done
+  }
+
   async function updateBill(bill: Bill) {
     const index = list.value.findIndex((item) => item.id === bill.id)
     if (index !== -1) {
@@ -100,5 +119,7 @@ export const useBillStore = defineStore('bill', () => {
     updateBill,
     list,
     loadBill,
+    map,
+    updateTransferBill,
   }
 })

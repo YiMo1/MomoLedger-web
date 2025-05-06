@@ -57,6 +57,8 @@ export class ExpensesBill extends Bill {
   readonly type = '支出'
   discount: number
 
+  get displayDiscount() { return (this.discount / 100).toFixed(2) }
+
   constructor({ account, discount, ...superOptions }: ExpensesBillOptions) {
     super(superOptions)
     this.account = account
@@ -92,6 +94,8 @@ export class IncomeBill extends Bill {
   account: Account
   readonly type = '收入'
   commission: number
+
+  get displayCommission() { return (this.commission / 100).toFixed(2) }
 
   constructor({ account, commission, ...superOptions }: IncomeBillOptions) {
     super(superOptions)
@@ -130,6 +134,8 @@ export class TransferBill extends Bill {
   receivingAccount: Account
   readonly type = '转账'
   commission: number
+
+  get displayCommission() { return (this.commission / 100).toFixed(2) }
 
   constructor({ paymentAccount, receivingAccount, commission, ...superOptions }:
   TransferBillOptions) {
