@@ -20,6 +20,7 @@ const store = useBillStore()
       icon-prefix="iconfont"
       class="after:hidden"
       title-class="ml-1"
+      label-class="line-clamp-2"
       :icon="bill.category.icon"
       :label="bill.note"
     >
