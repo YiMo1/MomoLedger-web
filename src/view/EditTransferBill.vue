@@ -4,8 +4,8 @@ import { noop } from 'es-toolkit'
 
 import { useAccountStore, useBillStore } from '@/store/index.ts'
 
-import type { Account, TransferBill } from '@/database/index.ts'
 import type { ActionSheetAction, PickerConfirmEventParams } from 'vant/es'
+import type { Account, TransferBill } from '@/database/index.ts'
 
 const store = useBillStore()
 const route = useRoute()
@@ -76,6 +76,15 @@ async function submit() {
   })
   router.back()
 }
+
+async function deleteBill() {
+  try {
+    await showDialog({ title: '删除账单', message: '确定要删除该条记录吗', showCancelButton: true })
+    await store.deleteBill(bill.id)
+    router.back()
+  }
+  catch { }
+}
 </script>
 
 <template>
@@ -89,7 +98,7 @@ async function submit() {
         size="24px"
         color="#000"
         class="mr-5"
-        @click="store.deleteBill(bill.id)" />
+        @click="deleteBill" />
       <van-icon name="success" size="24px" color="#000" @click="submit" />
     </template>
   </van-nav-bar>
