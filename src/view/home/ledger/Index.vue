@@ -32,6 +32,12 @@ function handleBillClick(bill: Bill, position: SwipeCellPosition) {
       router.push(`edit_transfer_bill/${bill.id}`)
       break
     }
+    case '支出':
+    case '收入': {
+      router.push(`/bill/detail/${bill.id}`)
+      break
+    }
+    default: { const _: never = bill }
   }
 }
 

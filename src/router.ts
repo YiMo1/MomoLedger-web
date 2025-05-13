@@ -7,6 +7,7 @@ import CreateBill from './view/create-bill/CreateBillView.vue'
 import AccountDetail from './view/AccountDetail.vue'
 import AccountEdit from './view/AccountEdit.vue'
 import EditTransferBill from './view/EditTransferBill.vue'
+import BillDetail from './view/BillDetail.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -36,5 +37,6 @@ export default createRouter({
         if (!useBillStore().map.has(Number(to.params.id))) return '/'
       },
     },
+    { path: '/bill/detail/:id', component: BillDetail },
   ],
 })
