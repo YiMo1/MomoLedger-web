@@ -131,7 +131,8 @@ function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
     <van-cell
       title="账单日期"
       class="after:hidden"
-      :value="bill.billTime.format('YYYY年MM月DD日 HH:ss')" />
+      :value="bill.billTime.format('YYYY年MM月DD日 HH:ss')"
+      @click="showPopup = true" />
     <van-cell
       title="收支账户"
       class="after:hidden"
@@ -151,8 +152,7 @@ function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
     <van-cell
       title="记录时间"
       class="after:hidden"
-      :value="bill.billTime.format('YYYY年MM月DD日 HH:mm')"
-      @click="showPopup = true" />
+      :value="bill.createTime.format('YYYY年MM月DD日 HH:mm')" />
   </van-cell-group>
 
   <van-popup v-model:show="showPopup" destroy-on-close round position="bottom" teleport="body">
