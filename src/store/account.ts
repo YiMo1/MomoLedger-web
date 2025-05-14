@@ -1,5 +1,6 @@
 import { merge, pick } from 'es-toolkit'
 
+import { emitter } from '@/utils/index.ts'
 import {
   type Account,
   type AccountDTO,
@@ -33,6 +34,7 @@ export const useAccountStore = defineStore('account', () => {
     const account = buildAccount({ ...options, id, createTime: Date.now() })
     await store.put(account.structured())
     list.value.push(account)
+    emitter.emit('reload-assets-data', account)
     return account
   }
 
