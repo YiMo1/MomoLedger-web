@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { queryAssetsData } from '@/api/index.ts'
-import { CreateAssetsData } from '@/utils/index.ts'
+import { useAssetsDataStore } from '@/store/assets-data.ts'
 
 const secret = defineModel<boolean>('secret', { required: true })
+
 defineProps<{ secretText: string }>()
 
-const data = ref(CreateAssetsData())
+const { data } = storeToRefs(useAssetsDataStore())
 
-onBeforeMount(async () => {
-  data.value = await queryAssetsData()
-})
 const show = ref(false)
 </script>
 

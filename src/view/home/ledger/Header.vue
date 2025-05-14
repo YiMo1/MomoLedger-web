@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import { queryAssetsData } from '@/api/index.ts'
-import { CreateAssetsData } from '@/utils/index.ts'
+import { useAssetsDataStore } from '@/store/assets-data.ts'
 
-const data = ref(CreateAssetsData())
-
-onBeforeMount(async () => {
-  data.value = await queryAssetsData()
-})
+const { data } = storeToRefs(useAssetsDataStore())
 </script>
 
 <template>
@@ -15,13 +10,13 @@ onBeforeMount(async () => {
       <div>
         <div>本月支出</div>
         <div class="mt-1 font-bold text-black">
-          {{ (data.expenditureForThisMonth / 100).toFixed(2) }}
+          {{ (data.thisMonthExpenses / 100).toFixed(2) }}
         </div>
       </div>
       <div>
         <div>本月结余</div>
         <div class="mt-1 font-bold text-black">
-          {{ (data.balanceForThisMonth / 100).toFixed(2) }}
+          {{ (data.thisMonthBalance / 100).toFixed(2) }}
         </div>
       </div>
       <div>

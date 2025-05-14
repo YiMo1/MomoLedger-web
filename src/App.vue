@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { useAccountStore, useBillStore, useCategoryStore } from './store/index.ts'
+import {
+  useAccountStore,
+  useAssetsDataStore,
+  useBillStore,
+  useCategoryStore,
+} from './store/index.ts'
 
 const isLoad = ref(false)
+
+useAssetsDataStore().reload()
 
 onBeforeMount(() => {
   Promise.all([
