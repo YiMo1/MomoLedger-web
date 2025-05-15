@@ -84,3 +84,11 @@ export class CreditAccount extends Account {
 type AccountType = AssetsAccount | CreditAccount
 export type { AccountType as Account }
 export type AccountDTO = ReturnType<AccountType['structured']>
+
+export function buildAccount(options: AccountDTO) {
+  switch (options.type) {
+    case '资产': { return new AssetsAccount(options) }
+    case '信贷': { return new CreditAccount(options) }
+    default: { const never: never = options; return never }
+  }
+}

@@ -155,7 +155,8 @@ export const useAssetsDataStore = defineStore('AssetsData', () => {
     }
   }
 
-  emitter.on('reload-assets-data', () => reload())
+  emitter.on('delete-account', () => reload())
+  emitter.on('create-account', () => reload())
 
   return { data, reload }
 })

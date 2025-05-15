@@ -41,7 +41,7 @@ function saveNote() {
 type Action = ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const accountActionSheetShow = ref(false)
-const accountActions = computed(() => accountStore.list.map<Action>((account) => {
+const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
   return { name: account.name, value: account }
 }))
 function onAccountSheetSelect(action: Action) {

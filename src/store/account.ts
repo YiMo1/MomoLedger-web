@@ -8,6 +8,7 @@ import {
   CreditAccount,
   DB,
 } from '../database/index.ts'
+import { deleteAccount as deleteAccountAPI } from '@/api/index.ts'
 
 import type { DistributedOmit, SetRequired } from 'type-fest'
 
@@ -20,11 +21,14 @@ function buildAccount(options: AccountDTO) {
 }
 
 export const useAccountStore = defineStore('account', () => {
-  const list = ref<Account[]>([])
-  const map = computed(() => new Map(list.value.map((item) => [item.id, item])))
+  const map = ref(new Map<Account['id'], Account>())
 
   async function loadAccounts() {
-    list.value = (await DB.getAll('account')).map((item) => buildAccount(item))
+    if (map.value.size > 0) { map.value.clear() }
+    const list = await DB.getAll('account')
+    for (const item of list) {
+      map.value.set(item.id, buildAccount(item))
+    }
   }
 
   async function createAccount(options: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
@@ -33,17 +37,15 @@ export const useAccountStore = defineStore('account', () => {
     const id = await store.add({} as any)
     const account = buildAccount({ ...options, id, createTime: Date.now() })
     await store.put(account.structured())
-    list.value.push(account)
-    emitter.emit('reload-assets-data', account)
+    map.value.set(account.id, account)
+    emitter.emit('create-account')
     return account
   }
 
-  function deleteAccount(id: Account['id']) {
-    const index = list.value.findIndex((item) => item.id === id)
-    if (index !== -1) {
-      list.value.splice(index, 1)
-      return DB.delete('account', id)
-    }
+  async function deleteAccount(id: Account['id']) {
+    await deleteAccountAPI(id)
+    await loadAccounts()
+    emitter.emit('delete-account')
   }
 
   function updateAccount(options: SetRequired<Partial<AccountDTO>, 'id' | 'type'>) {
@@ -58,5 +60,5 @@ export const useAccountStore = defineStore('account', () => {
     return DB.put('account', account.structured())
   }
 
-  return { list, map, createAccount, deleteAccount, updateAccount, loadAccounts }
+  return { map, createAccount, deleteAccount, updateAccount, loadAccounts }
 })

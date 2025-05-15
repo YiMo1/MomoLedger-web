@@ -1,8 +1,7 @@
 import mitt from 'mitt'
 
-import type { Account } from '@/database/index.ts'
-
 type Events = {
-  'reload-assets-data': Account
+  'delete-account': unknown
+  'create-account': unknown
 }
 export const emitter = mitt<Events>()

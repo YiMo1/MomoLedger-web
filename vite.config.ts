@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -6,6 +8,7 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import tailwindcss from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
 
@@ -28,10 +31,14 @@ export default defineConfig({
     vue(),
     AutoImport({
       dts: './src/auto-imports.d.ts',
-      resolvers: [VantResolver()],
+      resolvers: [VantResolver(), ElementPlusResolver()],
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
     }),
-    Components({ dts: false, resolvers: [VantResolver()], globs: 'src/components/*/index.ts' }),
+    Components({
+      dts: false,
+      resolvers: [VantResolver(), ElementPlusResolver()],
+      globs: 'src/components/*/index.ts',
+    }),
   ],
   css: {
     postcss: {
@@ -47,4 +54,5 @@ export default defineConfig({
       '@': resolve(__dirname, './src/'),
     },
   },
+  test: { watch: false },
 })

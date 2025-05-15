@@ -11,6 +11,7 @@ import {
 } from '../database/index.ts'
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
+import { emitter } from '@/utils/index.ts'
 
 import type { DistributedOmit, Except } from 'type-fest'
 
@@ -112,6 +113,11 @@ export const useBillStore = defineStore('bill', () => {
       return DB.put('bill', bill.structured())
     }
   }
+
+  emitter.on('delete-account', () => {
+    list.value = []
+    loadBill()
+  })
 
   return {
     createBill,

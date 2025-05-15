@@ -17,7 +17,7 @@ const accountStore = useAccountStore()
 const fromAccount = ref(bill.paymentAccount)
 const toAccount = ref(bill.receivingAccount)
 const accountActionSheetShow = ref(false)
-const accountActions = computed(() => accountStore.list.map<Action>((account) => {
+const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
   return { name: account.name, value: account }
 }))
 const onAccountSheetSelect = ref<(action: Action, index: number) => void>(noop)

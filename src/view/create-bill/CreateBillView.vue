@@ -127,9 +127,9 @@ type Action = ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const fromAccount = ref<Account>()
 const toAccount = ref<Account>()
-const payAccount = ref(accountStore.list[0])
+const payAccount = ref([...accountStore.map.values()][0])
 const accountActionSheetShow = ref(false)
-const accountActions = computed(() => accountStore.list.map<Action>((account) => {
+const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
   return { name: account.name, value: account }
 }))
 const onAccountSheetSelect = ref<(action: Action, index: number) => void>(noop)

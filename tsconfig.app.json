@@ -5,7 +5,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "types": ["vite/client", "vant/es"],
+    "types": ["vite/client", "vant/es", "element-plus/global"],
     "paths": {
       "@/*": ["./src/*"]
     }

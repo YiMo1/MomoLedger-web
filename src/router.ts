@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { toNumber } from 'es-toolkit/compat'
 
 import { useAccountStore, useBillStore } from './store/index.ts'
 import CreateAccount from './view/CreateAccount.vue'
@@ -16,11 +17,10 @@ export default createRouter({
     { path: '/create_account', component: CreateAccount },
     { path: '/create_bill', component: CreateBill },
     {
-      path: '/account_detail/:id',
+      path: '/account/detail/:id',
       component: AccountDetail,
-      beforeEnter(to) {
-        const id = parseInt(Array.isArray(to.params.id) ? to.params.id[0] : to.params.id)
-        if (isNaN(id)) return '/'
+      props({ params }) {
+        return { id: toNumber(params.id) }
       },
     },
     {

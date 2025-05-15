@@ -11,14 +11,14 @@ import type { SwipeCellPosition } from 'vant/es'
 
 dayjs.extend(customParseFormat)
 
-const { list: account } = storeToRefs(useAccountStore())
+const { map: account } = storeToRefs(useAccountStore())
 const { list: billList } = storeToRefs(useBillStore())
 const router = useRouter()
 
 const billGroup = useBillGroup(billList)
 
 function addNewRecord() {
-  if (account.value.length < 1) {
+  if (account.value.size < 1) {
     showFailToast('请先添加一个账户')
     return
   }
