@@ -74,6 +74,7 @@ export const useBillStore = defineStore('bill', () => {
       false,
     )
     list.value.splice(index, 0, bill)
+    emitter.emit('create-bill')
     return bill
   }
 
