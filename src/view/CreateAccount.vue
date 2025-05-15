@@ -2,7 +2,6 @@
 import { useAccountStore } from '@/store/account.ts'
 
 import type { Account } from '../database/index.ts'
-import type { FormInstance } from 'vant/es'
 
 const router = useRouter()
 const route = useRoute()
@@ -23,7 +22,7 @@ const balance = ref<number>()
 const note = ref('')
 const limit = ref<number>()
 
-const formRel = ref<FormInstance>()
+const formRel = ref<Vant.FormInstance>()
 async function createAccount() {
   try { await formRel.value?.validate() }
   catch { return }

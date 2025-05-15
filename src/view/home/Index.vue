@@ -2,8 +2,6 @@
 import Wallet from './wallet/Index.vue'
 import Ledger from './ledger/Index.vue'
 
-import type { ActionSheetAction, FloatingBubbleOffset } from 'vant/es'
-
 defineOptions({ name: 'HomeView' })
 
 const activeTabbar = useSessionStorage('active_tabbar', 0)
@@ -12,11 +10,11 @@ const show = ref(false)
 const actions = [
   { name: '资产账户' },
   { name: '信贷账户' },
-] satisfies ActionSheetAction[]
+] satisfies Vant.ActionSheetAction[]
 const router = useRouter()
 const ledgerRef = ref<InstanceType<typeof Ledger>>()
 const { width, height } = useWindowSize()
-const bubbleOffset = computed<FloatingBubbleOffset>(() => {
+const bubbleOffset = computed<Vant.FloatingBubbleOffset>(() => {
   return { x: width.value - 85, y: height.value - 135 }
 })
 function onBubbleClick() {

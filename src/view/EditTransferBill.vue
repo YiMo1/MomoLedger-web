@@ -4,7 +4,6 @@ import { noop } from 'es-toolkit'
 
 import { useAccountStore, useBillStore } from '@/store/index.ts'
 
-import type { ActionSheetAction, PickerConfirmEventParams } from 'vant/es'
 import type { Account, TransferBill } from '@/database/index.ts'
 
 const store = useBillStore()
@@ -12,7 +11,7 @@ const route = useRoute()
 const router = useRouter()
 const bill = store.map.get(Number(route.params.id)) as TransferBill
 
-type Action = ActionSheetAction & { value: Account }
+type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const fromAccount = ref(bill.paymentAccount)
 const toAccount = ref(bill.receivingAccount)
@@ -50,7 +49,7 @@ const displayBillTime = computed(() => {
 })
 const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
 const currentTime = ref(billTime.value.format('HH-mm').split('-'))
-function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
+function onBillTimeConfirm(values: Vant.PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].map(Number) as [
     number,

@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import { useAccountStore, useBillStore, useCategoryStore } from '@/store/index.ts'
 
 import type { Account, Bill } from '@/database/index.ts'
-import type { ActionSheetAction, PickerConfirmEventParams } from 'vant/es'
 
 const types: Bill['type'][] = ['支出', '收入', '转账']
 const billType = ref<Bill['type']>('支出')
@@ -93,7 +92,7 @@ const displayBillTime = computed(() => {
 })
 const currentDate = ref(billTime.value.format('YYYY-MM-DD').split('-'))
 const currentTime = ref(billTime.value.format('HH-mm').split('-'))
-function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
+function onBillTimeConfirm(values: Vant.PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].map(Number) as [
     number,
@@ -123,7 +122,7 @@ function onKeyboardInput(key: string) {
 }
 
 // 账户选择
-type Action = ActionSheetAction & { value: Account }
+type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const fromAccount = ref<Account>()
 const toAccount = ref<Account>()

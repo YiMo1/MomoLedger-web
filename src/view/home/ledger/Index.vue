@@ -7,7 +7,6 @@ import { useAccountStore, useBillStore } from '@/store/index.ts'
 import { useBillGroup } from '@/hooks/index.ts'
 
 import type { Bill } from '@/database/index.ts'
-import type { SwipeCellPosition } from 'vant/es'
 
 dayjs.extend(customParseFormat)
 
@@ -25,7 +24,7 @@ function addNewRecord() {
   router.push('/create_bill')
 }
 
-function handleBillClick(bill: Bill, position: SwipeCellPosition) {
+function handleBillClick(bill: Bill, position: Vant.SwipeCellPosition) {
   if (position !== 'cell') return
   switch (bill.type) {
     case '转账': {

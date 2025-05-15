@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useAccountStore } from '@/store/index.ts'
 
-import type { FormInstance } from 'vant/es'
-
 const route = useRoute()
 const router = useRouter()
 const store = useAccountStore()
@@ -34,7 +32,7 @@ onBeforeMount(() => {
   }
 })
 
-const formRel = ref<FormInstance>()
+const formRel = ref<Vant.FormInstance>()
 async function submit() {
   try { await formRel.value?.validate() }
   catch { return }

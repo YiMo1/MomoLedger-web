@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { useAccountStore, useBillStore } from '@/store/index.ts'
 
 import type { Account, ExpensesBill, IncomeBill } from '@/database/index.ts'
-import type { ActionSheetAction, PickerConfirmEventParams } from 'vant/es'
 
 const store = useBillStore()
 const route = useRoute()
@@ -38,7 +37,7 @@ function saveNote() {
 }
 
 // 账户选择
-type Action = ActionSheetAction & { value: Account }
+type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const accountActionSheetShow = ref(false)
 const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
@@ -71,7 +70,7 @@ function onAccountSheetSelect(action: Action) {
 const showPopup = ref(false)
 const currentDate = ref(bill.billTime.format('YYYY-MM-DD').split('-'))
 const currentTime = ref(bill.billTime.format('HH-mm').split('-'))
-function onBillTimeConfirm(values: PickerConfirmEventParams[]) {
+function onBillTimeConfirm(values: Vant.PickerConfirmEventParams[]) {
   const [{ selectedValues: dateValues }, { selectedValues: timeValues }] = values
   const args = [...dateValues, ...timeValues].map(Number) as [
     number,
