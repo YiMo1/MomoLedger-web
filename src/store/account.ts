@@ -4,21 +4,12 @@ import { emitter } from '@/utils/index.ts'
 import {
   type Account,
   type AccountDTO,
-  AssetsAccount,
-  CreditAccount,
   DB,
+  buildAccount,
 } from '../database/index.ts'
 import { deleteAccount as deleteAccountAPI } from '@/api/index.ts'
 
 import type { DistributedOmit, SetRequired } from 'type-fest'
-
-function buildAccount(options: AccountDTO) {
-  switch (options.type) {
-    case '资产': { return new AssetsAccount(options) }
-    case '信贷': { return new CreditAccount(options) }
-    default: { const never: never = options; return never }
-  }
-}
 
 export const useAccountStore = defineStore('account', () => {
   const map = ref(new Map<Account['id'], Account>())

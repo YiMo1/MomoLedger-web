@@ -15,8 +15,8 @@ async function initDB() {
   const DB = await open()
 
   if (import.meta.env.DEV) {
-    const tables: StoreNames<Database>[] = ['account', 'category', 'bill']
-    const resultMap = new Map<StoreNames<Database>, Promise<any[]>>()
+    const tables: StoreNames<DBSchema>[] = ['account', 'category', 'bill']
+    const resultMap = new Map<StoreNames<DBSchema>, Promise<any[]>>()
     const transaction = DB.transaction(tables, 'readonly')
 
     for (const table of tables) {
@@ -46,22 +46,24 @@ async function initDB() {
 }
 
 function open() {
-  return openDB<Database>(DB_NAME, DB_VERSION, { upgrade: upgradeDB })
+  return openDB<DBSchema>(DB_NAME, DB_VERSION, { upgrade: upgradeDB })
 }
 
-export interface Database extends DBSchema {
-  account: { key: AccountDTO['id']; value: AccountDTO }
-  bill: {
-    key: BillDTO['id']
-    value: BillDTO
-    indexes: {
-      idx_billTime: BillDTO['billTime']
+declare module 'idb' {
+  interface DBSchema {
+    account: { key: AccountDTO['id']; value: AccountDTO }
+    bill: {
+      key: BillDTO['id']
+      value: BillDTO
+      indexes: {
+        idx_billTime: BillDTO['billTime']
+      }
     }
+    category: { key: CategoryDTO['id']; value: CategoryDTO }
   }
-  category: { key: CategoryDTO['id']; value: CategoryDTO }
 }
 
-function upgradeDB(database: IDBPDatabase<Database>) {
+function upgradeDB(database: IDBPDatabase<DBSchema>) {
   database.createObjectStore('account', { keyPath: 'id', autoIncrement: true })
 
   const ledgerRecordStore = database.createObjectStore(

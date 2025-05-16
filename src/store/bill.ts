@@ -12,6 +12,7 @@ import {
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
 import { emitter } from '@/utils/index.ts'
+import { queryBill } from '@/api/index.ts'
 
 import type { DistributedOmit, Except } from 'type-fest'
 
@@ -23,6 +24,8 @@ export const useBillStore = defineStore('bill', () => {
   const map = computed(() => new Map(list.value.map((bill) => [bill.id, bill])))
 
   async function loadBill() {
+    const dtos = await queryBill()
+
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
     const index = store.index('idx_billTime')
