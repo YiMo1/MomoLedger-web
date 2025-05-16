@@ -1,7 +1,7 @@
 import { pick } from 'es-toolkit'
 import dayjs from 'dayjs'
 
-import type { Data } from '../utils.ts'
+import type { Model } from '../utils.ts'
 
 interface AccountOptions {
   id: number
@@ -9,7 +9,7 @@ interface AccountOptions {
   note: string
   createTime?: dayjs.ConfigType
 }
-abstract class Account implements Data {
+abstract class Account implements Model {
   readonly id: number
   name: string
   note: string

@@ -1,4 +1,4 @@
-import type { CategoryDTO } from '../table/index.ts'
+import type { CategoryDTO } from '../model/index.ts'
 
 export const category: CategoryDTO[] = [
   { id: 1, text: '支出' },

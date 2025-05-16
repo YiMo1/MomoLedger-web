@@ -1,6 +1,6 @@
 import { pick } from 'es-toolkit'
 
-import type { Data } from '../utils.ts'
+import type { Model } from '../utils.ts'
 
 interface CategoryOptions {
   id: number
@@ -9,7 +9,7 @@ interface CategoryOptions {
   icon?: string
 }
 
-export class Category implements Data {
+export class Category implements Model {
   readonly id: number
   text: string
   parent?: Category

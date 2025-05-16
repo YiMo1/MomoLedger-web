@@ -3,7 +3,7 @@ import { pick } from 'es-toolkit'
 
 import type { Account } from './account.ts'
 import type { Category } from '../index.ts'
-import type { Data, Store } from '../utils.ts'
+import type { Model, Store } from '../utils.ts'
 
 interface BillOptions {
   id: number
@@ -14,7 +14,7 @@ interface BillOptions {
   category: Category
 }
 
-abstract class Bill implements Data {
+abstract class Bill implements Model {
   readonly id: number
   note?: string
   amount: number
