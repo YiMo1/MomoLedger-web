@@ -9,20 +9,21 @@ import {
   IncomeBill,
   TransferBill,
 } from '../database/index.ts'
-import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
 import { emitter } from '@/utils/index.ts'
+import { queryBill } from '@/api/index.ts'
 
 import type { DistributedOmit, Except } from 'type-fest'
 
 export const useBillStore = defineStore('bill', () => {
-  const { map: category } = storeToRefs(useCategoryStore())
   const { map: account } = storeToRefs(useAccountStore())
 
   const list = ref<Bill[]>([])
   const map = computed(() => new Map(list.value.map((bill) => [bill.id, bill])))
 
   async function loadBill() {
+    const dtos = await queryBill()
+
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
     const index = store.index('idx_billTime')
@@ -91,7 +92,7 @@ export const useBillStore = defineStore('bill', () => {
   }
 
   async function updateTransferBill(params:
-  Except<ReturnType<TransferBill['structured']>, 'createTime' | 'type' | 'category'>) {
+  Except<ReturnType<TransferBill['serialize']>, 'createTime' | 'type' | 'category'>) {
     const bill = map.value.get(params.id) as TransferBill
     const transaction = DB.transaction(['account', 'bill'], 'readwrite')
     const accountStore = transaction.objectStore('account')
@@ -103,7 +104,7 @@ export const useBillStore = defineStore('bill', () => {
     bill.note = params.note
     bill.billTime = dayjs(params.billTime)
     bill.commission = params.commission
-    transaction.objectStore('bill').put(bill.structured())
+    transaction.objectStore('bill').put(bill.serialize())
     return await transaction.done
   }
 
@@ -111,7 +112,7 @@ export const useBillStore = defineStore('bill', () => {
     const index = list.value.findIndex((item) => item.id === bill.id)
     if (index !== -1) {
       list.value[index] = bill
-      return DB.put('bill', bill.structured())
+      return DB.put('bill', bill.serialize())
     }
   }
 

@@ -1,154 +1,96 @@
-import dayjs from 'dayjs'
 import { pick } from 'es-toolkit'
 
+import type dayjs from 'dayjs'
 import type { Account } from './account.ts'
 import type { Category } from '../index.ts'
-import type { Model, Store } from '../utils.ts'
+import type { Store } from '../utils.ts'
 
-interface BillOptions {
-  id: number
-  note?: string
-  createTime?: dayjs.ConfigType
-  billTime: dayjs.ConfigType
-  amount: number
-  category: Category
-}
+abstract class Bill {
+  declare id: number
+  declare note?: string
+  declare amount: number
+  declare billTime: dayjs.Dayjs
+  declare createTime: dayjs.Dayjs
+  declare category: Category
+  declare type: '支出' | '收入' | '转账'
 
-abstract class Bill implements Model {
-  readonly id: number
-  note?: string
-  amount: number
-  billTime: dayjs.Dayjs
-  createTime: dayjs.Dayjs
-  category: Category
-  abstract type: '支出' | '收入' | '转账'
-
-  get displayAmount() { return (this.amount / 100).toFixed(2) }
-
-  constructor({ amount, createTime, id, note, billTime, category }: BillOptions) {
-    this.id = id
-    this.note = note
-    this.amount = amount
-    this.category = category
-    this.createTime = dayjs(createTime)
-    this.billTime = dayjs(billTime)
-  }
-
-  structured() {
+  serialize() {
     const { billTime, createTime, category } = this
     return {
-      ...pick(this, ['id', 'note', 'amount', 'type']),
+      ...pick(this, ['id', 'note', 'amount', 'type'] satisfies (keyof Bill)[]),
       billTime: billTime.valueOf(),
       createTime: createTime.valueOf(),
-      category: category.id!,
+      category: category.id,
     }
   }
-  abstract rollBack(store: Store<'account', 'readwrite'>): void
-  abstract execute(store: Store<'account', 'readwrite'>): void
-}
-
-interface ExpensesBillOptions extends BillOptions {
-  account: Account
-  discount: number
 }
 
 export class ExpensesBill extends Bill {
-  account: Account
+  declare account: Account
   readonly type = '支出'
-  discount: number
+  declare discount: number
 
   get displayDiscount() { return (this.discount / 100).toFixed(2) }
 
-  constructor({ account, discount, ...superOptions }: ExpensesBillOptions) {
-    super(superOptions)
-    this.account = account
-    this.discount = discount
-  }
-
-  structured() {
+  serialize() {
     const { account } = this
     return {
-      ...super.structured(),
-      ...pick(this, ['discount']),
+      ...super.serialize(),
+      ...pick(this, ['discount'] satisfies (keyof ExpensesBill)[]),
       account: account.id,
     }
   }
 
   rollBack(store: Store<'account', 'readwrite'>) {
     this.account.income(this.amount)
-    store.put(this.account.structured())
+    store.put(this.account.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
-    this.account.expenses(this.amount)
-    store.put(this.account.structured())
+    this.account.expense(this.amount)
+    store.put(this.account.serialize())
   }
-}
-
-interface IncomeBillOptions extends BillOptions {
-  account: Account
-  commission: number
 }
 
 export class IncomeBill extends Bill {
-  account: Account
+  declare account: Account
   readonly type = '收入'
-  commission: number
+  declare commission: number
 
   get displayCommission() { return (this.commission / 100).toFixed(2) }
 
-  constructor({ account, commission, ...superOptions }: IncomeBillOptions) {
-    super(superOptions)
-    this.account = account
-    this.commission = commission
-  }
-
-  structured() {
+  serialize() {
     const { account } = this
     return {
-      ...super.structured(),
-      ...pick(this, ['commission']),
+      ...super.serialize(),
+      ...pick(this, ['commission'] satisfies (keyof IncomeBill)[]),
       account: account.id,
     }
   }
 
   rollBack(store: Store<'account', 'readwrite'>) {
-    this.account.expenses(this.amount)
-    store.put(this.account.structured())
+    this.account.expense(this.amount)
+    store.put(this.account.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
     this.account.income(this.amount)
-    store.put(this.account.structured())
+    store.put(this.account.serialize())
   }
-}
-
-interface TransferBillOptions extends BillOptions {
-  paymentAccount: Account
-  receivingAccount: Account
-  commission: number
 }
 
 export class TransferBill extends Bill {
-  paymentAccount: Account
-  receivingAccount: Account
+  declare paymentAccount: Account
+  declare receivingAccount: Account
   readonly type = '转账'
-  commission: number
+  declare commission: number
 
   get displayCommission() { return (this.commission / 100).toFixed(2) }
 
-  constructor({ paymentAccount, receivingAccount, commission, ...superOptions }:
-  TransferBillOptions) {
-    super(superOptions)
-    this.paymentAccount = paymentAccount
-    this.receivingAccount = receivingAccount
-    this.commission = commission
-  }
-
-  structured() {
+  serialize() {
     const { paymentAccount, receivingAccount } = this
     return {
-      ...super.structured(),
+      ...super.serialize(),
       ...pick(this, ['commission']),
       paymentAccount: paymentAccount.id,
       receivingAccount: receivingAccount.id,
@@ -157,19 +99,19 @@ export class TransferBill extends Bill {
 
   rollBack(store: Store<'account', 'readwrite'>) {
     this.paymentAccount.income(this.amount)
-    this.receivingAccount.expenses(this.amount)
-    store.put(this.paymentAccount.structured())
-    store.put(this.receivingAccount.structured())
+    this.receivingAccount.expense(this.amount)
+    store.put(this.paymentAccount.serialize())
+    store.put(this.receivingAccount.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
-    this.paymentAccount.expenses(this.amount)
+    this.paymentAccount.expense(this.amount)
     this.receivingAccount.income(this.amount)
-    store.put(this.paymentAccount.structured())
-    store.put(this.receivingAccount.structured())
+    store.put(this.paymentAccount.serialize())
+    store.put(this.receivingAccount.serialize())
   }
 }
 
 type BillType = ExpensesBill | IncomeBill | TransferBill
 export type { BillType as Bill }
-export type BillDTO = ReturnType<BillType['structured']>
+export type BillDTO = ReturnType<BillType['serialize']>

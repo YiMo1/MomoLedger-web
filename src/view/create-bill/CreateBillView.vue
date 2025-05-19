@@ -2,7 +2,8 @@
 import { noop, pick } from 'es-toolkit'
 import dayjs from 'dayjs'
 
-import { useAccountStore, useBillStore, useCategoryStore } from '@/store/index.ts'
+import { useAccountStore, useBillStore } from '@/store/index.ts'
+import { getCatetoryTree } from '@/api/index.ts'
 
 import type { Account, Bill } from '@/database/index.ts'
 
@@ -10,17 +11,20 @@ const types: Bill['type'][] = ['支出', '收入', '转账']
 const billType = ref<Bill['type']>('支出')
 
 // 类别
-const { list: categoryList } = storeToRefs(useCategoryStore())
+const roots = ref<Awaited<ReturnType<typeof getCatetoryTree>>>([])
 const expensesCategoryList = computed(() => {
-  const category = categoryList.value.find((item) => item.text === '支出' && !item.parent)
+  const category = roots.value.find((item) => item.text === '支出')
   return category?.children ?? []
 })
 const incomeCategoryList = computed(() => {
-  const category = categoryList.value.find((item) => item.text === '收入' && !item.parent)
+  const category = roots.value.find((item) => item.text === '收入')
   return category?.children ?? []
 })
 const expensesCategory = ref([expensesCategoryList.value[0]])
 const incomeCategory = ref([incomeCategoryList.value[0]])
+onBeforeMount(async () => {
+  roots.value = await getCatetoryTree()
+})
 
 const billStore = useBillStore()
 const router = useRouter()

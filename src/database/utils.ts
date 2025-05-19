@@ -1,8 +1,7 @@
-import type { IDBPObjectStore, StoreNames } from 'idb'
-import type { Database } from './index.ts'
+import type { DBSchema, IDBPObjectStore, StoreNames } from 'idb'
 
 export interface Model { structured: () => unknown }
 export type Store<
-  Table extends StoreNames<Database>,
+  Table extends StoreNames<DBSchema>,
   Mode extends IDBTransactionMode = 'readonly',
-> = IDBPObjectStore<Database, ArrayLike<StoreNames<Database>>, Table, Mode>
+> = IDBPObjectStore<DBSchema, ArrayLike<StoreNames<DBSchema>>, Table, Mode>
