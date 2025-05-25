@@ -9,20 +9,21 @@ import {
   IncomeBill,
   TransferBill,
 } from '../database/index.ts'
-import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
 import { emitter } from '@/utils/index.ts'
+import { queryBill } from '@/api/index.ts'
 
 import type { DistributedOmit, Except } from 'type-fest'
 
 export const useBillStore = defineStore('bill', () => {
-  const { map: category } = storeToRefs(useCategoryStore())
   const { map: account } = storeToRefs(useAccountStore())
 
   const list = ref<Bill[]>([])
   const map = computed(() => new Map(list.value.map((bill) => [bill.id, bill])))
 
   async function loadBill() {
+    const dtos = await queryBill()
+
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
     const index = store.index('idx_billTime')
@@ -38,15 +39,15 @@ export const useBillStore = defineStore('bill', () => {
       case '支出': {
         return new ExpensesBill({
           ...options,
-          account: account.value.get(options.account)!,
-          category: category.value.get(options.category)!,
+          account: account.value.get(options.aid)!,
+          category: category.value.get(options.cid)!,
         })
       }
       case '收入': {
         return new IncomeBill({
           ...options,
-          account: account.value.get(options.account)!,
-          category: category.value.get(options.category)!,
+          account: account.value.get(options.aid)!,
+          category: category.value.get(options.cid)!,
         })
       }
       case '转账': {
@@ -54,7 +55,7 @@ export const useBillStore = defineStore('bill', () => {
           ...options,
           paymentAccount: account.value.get(options.paymentAccount)!,
           receivingAccount: account.value.get(options.receivingAccount)!,
-          category: category.value.get(options.category)!,
+          category: category.value.get(options.cid)!,
         })
       }
       default: { const never: never = options; return never }
@@ -91,19 +92,19 @@ export const useBillStore = defineStore('bill', () => {
   }
 
   async function updateTransferBill(params:
-  Except<ReturnType<TransferBill['structured']>, 'createTime' | 'type' | 'category'>) {
+  Except<ReturnType<TransferBill['serialize']>, 'createTime' | 'type' | 'category'>) {
     const bill = map.value.get(params.id) as TransferBill
     const transaction = DB.transaction(['account', 'bill'], 'readwrite')
     const accountStore = transaction.objectStore('account')
     bill.rollBack(accountStore)
-    bill.paymentAccount = account.value.get(params.paymentAccount)!
-    bill.receivingAccount = account.value.get(params.receivingAccount)!
+    bill.fromAccount = account.value.get(params.fromAccount)!
+    bill.toAccount = account.value.get(params.toAccount)!
     bill.amount = params.amount
     bill.execute(accountStore)
     bill.note = params.note
     bill.billTime = dayjs(params.billTime)
     bill.commission = params.commission
-    transaction.objectStore('bill').put(bill.structured())
+    transaction.objectStore('bill').put(bill.serialize())
     return await transaction.done
   }
 
@@ -111,7 +112,7 @@ export const useBillStore = defineStore('bill', () => {
     const index = list.value.findIndex((item) => item.id === bill.id)
     if (index !== -1) {
       list.value[index] = bill
-      return DB.put('bill', bill.structured())
+      return DB.put('bill', bill.serialize())
     }
   }
 

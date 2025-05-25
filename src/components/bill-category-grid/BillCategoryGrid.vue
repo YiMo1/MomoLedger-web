@@ -3,10 +3,16 @@ import { chunk } from 'es-toolkit'
 
 import GridCell from './BillCategoryGridCell.vue'
 
-import type { Category } from '@/database/index.ts'
+import type { getCatetoryTree } from '@/api/index.ts'
 
-const value = defineModel<Category[]>({ required: true, default: () => [] })
-const props = withDefaults(defineProps<{ list: Category[]; leave2?: boolean }>(), {
+const value = defineModel<Awaited<ReturnType<typeof getCatetoryTree>>>({
+  required: true,
+  default: () => [],
+})
+const props = withDefaults(defineProps<{
+  list: Awaited<ReturnType<typeof getCatetoryTree>>
+  leave2?: boolean
+}>(), {
   leave2: false,
 })
 const COLUMN_COUNT = 5

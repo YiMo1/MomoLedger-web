@@ -3,18 +3,16 @@ import {
   useAccountStore,
   useAssetsDataStore,
   useBillStore,
-  useCategoryStore,
 } from './store/index.ts'
 
 const isLoad = ref(false)
 
 useAssetsDataStore().reload()
 
-onBeforeMount(() => {
-  Promise.all([
-    useAccountStore().loadAccounts(),
-    useCategoryStore().loadCategorys(),
-  ]).then(() => useBillStore().loadBill()).then(() => isLoad.value = true)
+onBeforeMount(async () => {
+  await useAccountStore().loadAccounts()
+  await useBillStore().loadBill()
+  isLoad.value = true
 })
 </script>
 

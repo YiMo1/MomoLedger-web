@@ -13,8 +13,8 @@ const bill = store.map.get(Number(route.params.id)) as TransferBill
 
 type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
-const fromAccount = ref(bill.paymentAccount)
-const toAccount = ref(bill.receivingAccount)
+const fromAccount = ref(bill.fromAccount)
+const toAccount = ref(bill.toAccount)
 const accountActionSheetShow = ref(false)
 const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
   return { name: account.name, value: account }
@@ -69,9 +69,9 @@ async function submit() {
     amount: amount.value * 100,
     billTime: billTime.value.valueOf(),
     note: note.value || undefined,
-    paymentAccount: fromAccount.value.id,
+    fromAccount: fromAccount.value.id,
     commission: commission.value * 100,
-    receivingAccount: toAccount.value.id,
+    toAccount: toAccount.value.id,
   })
   router.back()
 }

@@ -4,21 +4,11 @@ import { emitter } from '@/utils/index.ts'
 import {
   type Account,
   type AccountDTO,
-  AssetsAccount,
-  CreditAccount,
+  BillFactory,
   DB,
 } from '../database/index.ts'
-import { deleteAccount as deleteAccountAPI } from '@/api/index.ts'
 
 import type { DistributedOmit, SetRequired } from 'type-fest'
-
-function buildAccount(options: AccountDTO) {
-  switch (options.type) {
-    case '资产': { return new AssetsAccount(options) }
-    case '信贷': { return new CreditAccount(options) }
-    default: { const never: never = options; return never }
-  }
-}
 
 export const useAccountStore = defineStore('account', () => {
   const map = ref(new Map<Account['id'], Account>())
@@ -27,7 +17,7 @@ export const useAccountStore = defineStore('account', () => {
     if (map.value.size > 0) { map.value.clear() }
     const list = await DB.getAll('account')
     for (const item of list) {
-      map.value.set(item.id, buildAccount(item))
+      map.value.set(item.id, BillFactory.build(item))
     }
   }
 
@@ -35,17 +25,11 @@ export const useAccountStore = defineStore('account', () => {
     const transaction = DB.transaction('account', 'readwrite')
     const store = transaction.objectStore('account')
     const id = await store.add({} as any)
-    const account = buildAccount({ ...options, id, createTime: Date.now() })
-    await store.put(account.structured())
+    const account = BillFactory.build({ ...options, id, createTime: Date.now() })
+    await store.put(account.serialize())
     map.value.set(account.id, account)
     emitter.emit('create-account')
     return account
-  }
-
-  async function deleteAccount(id: Account['id']) {
-    await deleteAccountAPI(id)
-    await loadAccounts()
-    emitter.emit('delete-account')
   }
 
   function updateAccount(options: SetRequired<Partial<AccountDTO>, 'id' | 'type'>) {
@@ -57,8 +41,8 @@ export const useAccountStore = defineStore('account', () => {
     if (account.type === '资产' && options.type === '资产') {
       merge(account, pick(options, ['name', 'balance', 'note']))
     }
-    return DB.put('account', account.structured())
+    return DB.put('account', account.serialize())
   }
 
-  return { map, createAccount, deleteAccount, updateAccount, loadAccounts }
+  return { map, createAccount, updateAccount, loadAccounts }
 })

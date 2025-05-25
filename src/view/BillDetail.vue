@@ -20,8 +20,8 @@ async function deleteBill() {
 }
 
 const categoryText = computed(() => {
-  if (bill.category.parent) {
-    return `${bill.category.parent.text}-${bill.category.text}`
+  if (bill.category.pid) {
+    return `${bill.category.pid.text}-${bill.category.text}`
   }
   return bill.category.text
 })

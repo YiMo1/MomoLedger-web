@@ -1,15 +1,12 @@
 import 'fake-indexeddb/auto'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { IDBFactory } from 'fake-indexeddb'
 
 import { type AccountDTO, type BillDTO, type CreditAccount, DB } from '@/database/index.ts'
 import { deleteAccount } from '../index.ts'
 
-afterEach(async () => {
-  const arr = []
-  for (const name of DB.objectStoreNames) {
-    arr.push(DB.clear(name))
-  }
-  await Promise.all(arr)
+afterEach(() => {
+  vi.stubGlobal('indexedDB', new IDBFactory())
 })
 
 describe(deleteAccount.name, () => {
@@ -23,7 +20,7 @@ describe(deleteAccount.name, () => {
 
   it('应删除账户并清除关联账单', async () => {
     const aid = await DB.add('account', {} as AccountDTO)
-    const bid = await DB.add('bill', { type: '支出', account: aid } as BillDTO)
+    const bid = await DB.add('bill', { type: '支出', aid } as BillDTO)
 
     expect(await DB.get('bill', bid)).not.toBeUndefined()
 
@@ -46,7 +43,7 @@ describe(deleteAccount.name, () => {
     expect(await DB.get('account', paymentAccount)).toBeUndefined()
     expect(await DB.get('bill', bid)).toBeUndefined()
     const account = (await DB.get('account', receivingAccount)) as ReturnType<
-      CreditAccount['structured']
+      CreditAccount['serialize']
     >
     expect(account.debt).toBe(1100)
   })

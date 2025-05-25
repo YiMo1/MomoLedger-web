@@ -1,6 +1,12 @@
 import { merge, pick } from 'es-toolkit'
 import dayjs from 'dayjs'
 
+declare module 'idb' {
+  interface DBSchema {
+    account: { key: AccountDTO['id']; value: AccountDTO }
+  }
+}
+
 abstract class BaseAccount {
   declare id: number
   declare name: string
@@ -37,9 +43,9 @@ export class CreditAccount extends BaseAccount {
   declare limit: number
   readonly type = '信贷'
 
-  expense(amount: number) { this.debt -= amount }
+  expense(amount: number) { this.debt += amount }
 
-  income(amount: number) { this.limit += amount }
+  income(amount: number) { this.debt -= amount }
 
   serialize() {
     return {
@@ -54,7 +60,7 @@ export type AccountDTO = ReturnType<Account['serialize']>
 
 // eslint-disable-next-line ts/no-extraneous-class
 export class AccountFactory {
-  static build(data: ReturnType<Account['serialize']>): Account {
+  static build(data: AccountDTO): Account {
     let account: Account
     switch (data.type) {
       case '资产': { account = new AssetsAccount(); break }
