@@ -8,11 +8,13 @@ const props = defineProps<{ bill: Bill }>()
 const elRef = ref<HTMLDivElement>()
 const offset = ref(0)
 const { lengthX } = useSwipe(elRef, {
+  passive: false,
   threshold: 0,
   onSwipeStart() {
     if (elRef.value) elRef.value.style.transition = ''
   },
   onSwipe(e) {
+    e.preventDefault()
     if (lengthX.value > 0) return
     e.stopPropagation()
     offset.value = -lengthX.value
