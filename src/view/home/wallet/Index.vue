@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAccountStore } from '@/store/account.ts'
 import HeaderComp from './Header.vue'
+import { formatMoney } from '@/utils/index.ts'
 
 const { map } = storeToRefs(useAccountStore())
 
@@ -26,7 +27,7 @@ const secret = ref(false)
       <div v-if="assetsAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
           <div>资产账户</div>
-          <div>{{ secret ? SECRET_TEXT : (totalAssets / 100).toFixed(2) }}</div>
+          <div>{{ secret ? SECRET_TEXT : formatMoney(totalAssets) }}</div>
         </div>
         <account-cell
           v-for="item in assetsAccount"
@@ -39,7 +40,7 @@ const secret = ref(false)
       <div v-if="creditAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
           <div>信贷账户</div>
-          <div>{{ secret ? SECRET_TEXT : (totalDebt / 100).toFixed(2) }}</div>
+          <div>{{ secret ? SECRET_TEXT : formatMoney(totalDebt) }}</div>
         </div>
         <account-cell
           v-for="item in creditAccount" :key="item.id"

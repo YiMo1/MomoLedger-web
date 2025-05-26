@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAssetsDataStore } from '@/store/assets-data.ts'
+import { formatMoney } from '@/utils/index.ts'
 
 const { data } = storeToRefs(useAssetsDataStore())
 </script>
@@ -10,25 +11,25 @@ const { data } = storeToRefs(useAssetsDataStore())
       <div>
         <div>本月支出</div>
         <div class="mt-1 font-bold text-black">
-          {{ (data.thisMonthExpenses / 100).toFixed(2) }}
+          {{ formatMoney(data.thisMonthExpenses) }}
         </div>
       </div>
       <div>
         <div>本月结余</div>
         <div class="mt-1 font-bold text-black">
-          {{ (data.thisMonthBalance / 100).toFixed(2) }}
+          {{ formatMoney(data.thisMonthBalance) }}
         </div>
       </div>
       <div>
         <div>日均消费</div>
         <div class="mt-1 font-bold text-black">
-          {{ (data.dailyAverageConsumption / 100).toFixed(2) }}
+          {{ formatMoney(data.dailyAverageConsumption) }}
         </div>
       </div>
     </div>
     <div class="mt-3">
       <div>净资产</div>
-      <div class="text-lg font-bold text-emerald-500">{{ (data.netAssets / 100).toFixed(2) }}</div>
+      <div class="text-lg font-bold text-emerald-500">{{ formatMoney(data.netAssets) }}</div>
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useBillStore } from '@/store/bill'
+import { formatMoney } from '@/utils/index.ts'
 
 import type { Bill } from '@/database/index.ts'
 
@@ -51,7 +52,7 @@ const store = useBillStore()
         >
           <span v-if="bill.type === '支出'">-</span>
           <span v-else-if="bill.type === '收入'">+</span>
-          <span>{{ bill.displayAmount }}</span>
+          <span>{{ formatMoney(bill.amount) }}</span>
         </div>
         <div v-if="bill.type === '支出' || bill.type === '收入'">{{ bill.account.name }}</div>
         <div v-else-if="bill.type === '转账'">

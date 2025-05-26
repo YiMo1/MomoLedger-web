@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatMoney } from '@/utils/index.ts'
+
 import type { Account } from '@/database/index.ts'
 
 defineOptions({ name: 'AccountCell' })
@@ -19,10 +21,10 @@ defineProps<{ account: Account; secret: boolean; secretText?: string }>()
     >
       <template v-if="secret">{{ secretText }}</template>
       <template v-else-if="account.type === '信贷'">
-        {{ `-${account.displayDebt}` }}
+        {{ `-${formatMoney(account.debt)}` }}
       </template>
       <template v-else-if="account.type === '资产'">
-        {{ account.displayBalance }}
+        {{ formatMoney(account.balance) }}
       </template>
     </div>
   </div>

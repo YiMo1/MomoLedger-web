@@ -41,8 +41,6 @@ export class AssetsAccount extends Account {
   readonly type = '资产'
   balance: number
 
-  get displayBalance() { return (this.balance / 100).toFixed(2) }
-
   constructor({ balance, ...superOptions }: AssetsAccountOptions) {
     super(superOptions)
     this.balance = balance
@@ -63,10 +61,6 @@ export class CreditAccount extends Account {
   readonly type = '信贷'
   debt: number
   limit: number
-
-  get displayDebt() { return (this.debt / 100).toFixed(2) }
-
-  get displayLimit() { return (this.limit / 100).toFixed(2) }
 
   constructor({ debt, limit, ...superOptions }: CreditAccountOptions) {
     super(superOptions)

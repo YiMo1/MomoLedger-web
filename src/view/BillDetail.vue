@@ -2,6 +2,7 @@
 import dayjs from 'dayjs'
 
 import { useAccountStore, useBillStore } from '@/store/index.ts'
+import { formatMoney } from '@/utils/index.ts'
 
 import type { Account, ExpensesBill, IncomeBill } from '@/database/index.ts'
 
@@ -25,8 +26,10 @@ const categoryText = computed(() => {
   }
   return bill.category.text
 })
-const amount = computed(() => `${bill.type === '支出' ? '-' : '+'}${bill.displayAmount}`)
-const discount = computed(() => bill.type === '支出' ? bill.displayDiscount : bill.displayCommission)
+const amount = computed(() => `${bill.type === '支出' ? '-' : '+'}${formatMoney(bill.amount)}`)
+const discount = computed(() => bill.type === '支出'
+  ? formatMoney(bill.discount)
+  : formatMoney(bill.commission))
 
 const noteActionShow = ref(false)
 const note = ref(bill.note)

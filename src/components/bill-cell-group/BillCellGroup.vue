@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
+import { formatMoney } from '@/utils/index.ts'
+
 import type { Bill } from '@/database/index.ts'
 
 const props = defineProps<{ data: Bill[]; date: dayjs.Dayjs }>()
@@ -48,10 +50,10 @@ const displayDate = computed(() => {
           <div>
             <span>收</span>
             <span class="ml-2 mr-4 text-emerald-400">
-              {{ (statistics.income / 100).toFixed(2) }}
+              {{ formatMoney(statistics.income) }}
             </span>
             <span>支</span>
-            <span class="ml-2 text-red-500">{{ (statistics.expenses / 100).toFixed(2) }}</span>
+            <span class="ml-2 text-red-500">{{ formatMoney(statistics.expenses) }}</span>
           </div>
         </div>
       </template>
