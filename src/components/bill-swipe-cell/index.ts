@@ -1,9 +1,9 @@
-import SFC from './BillSwipeCell.vue'
+import BillSwipeCell from './BillSwipeCell.vue'
 
-export default SFC
+export default BillSwipeCell
 
 declare module 'vue'{
-  interface GlobalComponents {
-    BillSwipeCell: typeof SFC
+  export interface GlobalComponents {
+    BillSwipeCell: typeof BillSwipeCell
   }
 }

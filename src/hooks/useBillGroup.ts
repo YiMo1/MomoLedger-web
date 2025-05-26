@@ -1,7 +1,10 @@
 import { groupBy } from 'es-toolkit'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import type { Bill } from '@/database/index.ts'
+
+dayjs.extend(customParseFormat)
 
 export function useBillGroup(bills: MaybeRef<Bill[]>) {
   return computed(() => {
