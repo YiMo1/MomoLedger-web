@@ -1,15 +1,11 @@
 import 'fake-indexeddb/auto'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { type AccountDTO, type BillDTO, type CreditAccount, DB } from '@/database/index.ts'
 import { deleteAccount } from '../index.ts'
 
 afterEach(async () => {
-  const arr = []
-  for (const name of DB.objectStoreNames) {
-    arr.push(DB.clear(name))
-  }
-  await Promise.all(arr)
+  vi.stubGlobal('indexedDB', new IDBFactory())
 })
 
 describe(deleteAccount.name, () => {

@@ -1,46 +1,49 @@
-import { AccountFactory, DB } from '@/database/index.ts'
+import { type Account, AccountFactory, DB } from '@/database/index.ts'
 
 export async function deleteAccount(id: number) {
   const transaction = DB.transaction(['bill', 'account'], 'readwrite')
   const accountStore = transaction.objectStore('account')
   const billStore = transaction.objectStore('bill')
 
-  for (const bill of await billStore.getAll()) {
-    switch (bill.type) {
+  let cursor = await billStore.openCursor()
+
+  while (cursor) {
+    const billDTO = cursor.value
+    switch (billDTO.type) {
       case '支出':
       case '收入': {
-        if (bill.account === id) { await billStore.delete(bill.id) }
+        if (billDTO.account === id) { cursor.delete() }
         break
       }
       case '转账': {
-        if (bill.paymentAccount === id) {
-          const account = (await accountStore.get(bill.receivingAccount))!
-          switch (account.type) {
-            case '信贷': { account.debt += bill.amount; break }
-            case '资产': { account.balance -= bill.amount; break }
-            default: { const _: never = account }
+        if (billDTO.paymentAccount === id || billDTO.receivingAccount === id) {
+          let account: Account | null = null
+          if (billDTO.paymentAccount === id) {
+            const accountDTO = await accountStore.get(billDTO.receivingAccount)
+            if (accountDTO) {
+              account = AccountFactory.build(accountDTO)
+              account.expense(billDTO.amount)
+            }
           }
-          await accountStore.put(account)
-          await billStore.delete(bill.id)
-        }
-        if (bill.receivingAccount === id) {
-          const account = (await accountStore.get(bill.paymentAccount))!
-          switch (account.type) {
-            case '信贷': { account.debt -= bill.amount; break }
-            case '资产': { account.balance += bill.amount; break }
-            default: { const _: never = account }
+          if (billDTO.receivingAccount === id) {
+            const accountDTO = await accountStore.get(billDTO.paymentAccount)
+            if (accountDTO) {
+              account = AccountFactory.build(accountDTO)
+              account.income(billDTO.amount)
+            }
           }
-          await accountStore.put(account)
-          await billStore.delete(bill.id)
+          account && await accountStore.put(account.serialize())
+          cursor.delete()
         }
         break
       }
-      default: { const _: never = bill }
+      default: { const _: never = billDTO }
     }
+    cursor = await cursor.continue()
   }
 
-  await accountStore.delete(id)
-  await transaction.done
+  accountStore.delete(id)
+  return transaction.done
 }
 
 export async function queryAccountById(id: number) {
