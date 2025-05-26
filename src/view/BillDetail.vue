@@ -51,16 +51,16 @@ function onAccountSheetSelect(action: Action) {
   switch (bill.type) {
     case '支出': {
       bill.account.income(bill.amount)
-      accountStore.updateAccount(bill.account.structured())
-      action.value.expenses(bill.amount)
-      accountStore.updateAccount(action.value.structured())
+      accountStore.updateAccount(bill.account.serialize())
+      action.value.expense(bill.amount)
+      accountStore.updateAccount(action.value.serialize())
       break
     }
     case '收入': {
-      bill.account.expenses(bill.amount)
-      accountStore.updateAccount(bill.account.structured())
+      bill.account.expense(bill.amount)
+      accountStore.updateAccount(bill.account.serialize())
       action.value.income(bill.amount)
-      accountStore.updateAccount(action.value.structured())
+      accountStore.updateAccount(action.value.serialize())
       break
     }
     default: { const _: never = bill }

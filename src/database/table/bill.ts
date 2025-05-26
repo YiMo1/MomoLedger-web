@@ -72,12 +72,12 @@ export class ExpensesBill extends Bill {
 
   rollBack(store: Store<'account', 'readwrite'>) {
     this.account.income(this.amount)
-    store.put(this.account.structured())
+    store.put(this.account.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
-    this.account.expenses(this.amount)
-    store.put(this.account.structured())
+    this.account.expense(this.amount)
+    store.put(this.account.serialize())
   }
 }
 
@@ -107,13 +107,13 @@ export class IncomeBill extends Bill {
   }
 
   rollBack(store: Store<'account', 'readwrite'>) {
-    this.account.expenses(this.amount)
-    store.put(this.account.structured())
+    this.account.expense(this.amount)
+    store.put(this.account.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
     this.account.income(this.amount)
-    store.put(this.account.structured())
+    store.put(this.account.serialize())
   }
 }
 
@@ -149,16 +149,16 @@ export class TransferBill extends Bill {
 
   rollBack(store: Store<'account', 'readwrite'>) {
     this.paymentAccount.income(this.amount)
-    this.receivingAccount.expenses(this.amount)
-    store.put(this.paymentAccount.structured())
-    store.put(this.receivingAccount.structured())
+    this.receivingAccount.expense(this.amount)
+    store.put(this.paymentAccount.serialize())
+    store.put(this.receivingAccount.serialize())
   }
 
   execute(store: Store<'account', 'readwrite'>) {
-    this.paymentAccount.expenses(this.amount)
+    this.paymentAccount.expense(this.amount)
     this.receivingAccount.income(this.amount)
-    store.put(this.paymentAccount.structured())
-    store.put(this.receivingAccount.structured())
+    store.put(this.paymentAccount.serialize())
+    store.put(this.receivingAccount.serialize())
   }
 }
 

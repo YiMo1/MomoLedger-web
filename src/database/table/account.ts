@@ -1,88 +1,82 @@
-import { pick } from 'es-toolkit'
+import { merge, pick } from 'es-toolkit'
 import dayjs from 'dayjs'
 
-import type { Data } from '../utils.ts'
-
-interface AccountOptions {
-  id: number
-  name: string
-  note: string
-  createTime?: dayjs.ConfigType
-}
-abstract class Account implements Data {
-  readonly id: number
-  name: string
-  note: string
-  createTime: dayjs.Dayjs
-  abstract type: '资产' | '信贷'
-
-  constructor({ id, name, note, createTime }: AccountOptions) {
-    this.id = id
-    this.name = name
-    this.note = note
-    this.createTime = dayjs(createTime)
+declare module 'idb' {
+  interface DBSchema {
+    account: { key: AccountDTO['id']; value: AccountDTO }
   }
+}
 
-  abstract expenses(amount: number): void
+abstract class BaseAccount {
+  declare id: number
+  declare name: string
+  declare createTime: dayjs.Dayjs
+  declare note?: string
+
+  abstract expense(amount: number): void
   abstract income(amount: number): void
-  structured() {
-    const { createTime } = this
+  abstract serialize(): unknown
+}
+
+export class AssetsAccount extends BaseAccount {
+  declare type: '资产'
+  declare balance: number
+
+  expense(amount: number) { this.balance -= amount }
+
+  income(amount: number) { this.balance += amount }
+
+  serialize() {
     return {
-      ...pick(this, ['id', 'name', 'note', 'type']),
-      createTime: createTime.valueOf(),
+      ...pick(this, [
+        'id',
+        'name',
+        'note',
+        'type',
+        'balance',
+      ] satisfies (keyof AssetsAccount)[]),
+      createTime: this.createTime.valueOf(),
     }
   }
 }
 
-interface AssetsAccountOptions extends AccountOptions {
-  balance: number
-}
-export class AssetsAccount extends Account {
-  readonly type = '资产'
-  balance: number
+export class CreditAccount extends BaseAccount {
+  declare type: '信贷'
+  declare debt: number
+  declare limit: number
 
-  constructor({ balance, ...superOptions }: AssetsAccountOptions) {
-    super(superOptions)
-    this.balance = balance
+  expense(amount: number) { this.debt += amount }
+
+  income(amount: number) { this.debt -= amount }
+
+  serialize() {
+    return {
+      ...pick(this, [
+        'id',
+        'name',
+        'note',
+        'type',
+        'debt',
+        'limit',
+      ] satisfies (keyof CreditAccount)[]),
+      createTime: this.createTime.valueOf(),
+    }
   }
-
-  expenses(amount: number) { this.balance -= amount }
-
-  income(amount: number) { this.balance += amount }
-
-  structured() { return { ...super.structured(), ...pick(this, ['balance']) } }
 }
 
-interface CreditAccountOptions extends AccountOptions {
-  debt: number
-  limit: number
-}
-export class CreditAccount extends Account {
-  readonly type = '信贷'
-  debt: number
-  limit: number
+export type Account = AssetsAccount | CreditAccount
+export type AccountDTO = ReturnType<Account['serialize']>
 
-  constructor({ debt, limit, ...superOptions }: CreditAccountOptions) {
-    super(superOptions)
-    this.debt = debt
-    this.limit = limit
-  }
-
-  expenses(amount: number) { this.debt -= amount }
-
-  income(amount: number) { this.debt += amount }
-
-  structured() { return { ...super.structured(), ...pick(this, ['debt', 'limit']) } }
-}
-
-type AccountType = AssetsAccount | CreditAccount
-export type { AccountType as Account }
-export type AccountDTO = ReturnType<AccountType['structured']>
-
-export function buildAccount(options: AccountDTO) {
-  switch (options.type) {
-    case '资产': { return new AssetsAccount(options) }
-    case '信贷': { return new CreditAccount(options) }
-    default: { const never: never = options; return never }
+// eslint-disable-next-line ts/no-extraneous-class
+export class AccountFactory {
+  static build(data: AccountDTO): Account {
+    let account: Account
+    switch (data.type) {
+      case '资产': { account = new AssetsAccount(); break }
+      case '信贷': { account = new CreditAccount(); break }
+      default: { account = data }
+    }
+    merge(account, { ...data, createTime: dayjs(data.createTime) })
+    return account
   }
 }

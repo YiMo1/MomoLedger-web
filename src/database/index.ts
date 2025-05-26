@@ -2,7 +2,7 @@ import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } f
 
 import { category } from './init-data/v1.ts'
 
-import type { AccountDTO, BillDTO, CategoryDTO } from './table/index.ts'
+import type { BillDTO, CategoryDTO } from './table/index.ts'
 
 export * from './table/index.ts'
 
@@ -50,7 +50,6 @@ function open() {
 }
 
 export interface Database extends DBSchema {
-  account: { key: AccountDTO['id']; value: AccountDTO }
   bill: {
     key: BillDTO['id']
     value: BillDTO

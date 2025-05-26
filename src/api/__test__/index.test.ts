@@ -46,7 +46,7 @@ describe(deleteAccount.name, () => {
     expect(await DB.get('account', paymentAccount)).toBeUndefined()
     expect(await DB.get('bill', bid)).toBeUndefined()
     const account = (await DB.get('account', receivingAccount)) as ReturnType<
-      CreditAccount['structured']
+      CreditAccount['serialize']
     >
     expect(account.debt).toBe(1100)
   })

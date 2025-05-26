@@ -1,4 +1,4 @@
-import { DB, buildAccount } from '@/database/index.ts'
+import { AccountFactory, DB } from '@/database/index.ts'
 
 export async function deleteAccount(id: number) {
   const transaction = DB.transaction(['bill', 'account'], 'readwrite')
@@ -45,5 +45,5 @@ export async function deleteAccount(id: number) {
 
 export async function queryAccountById(id: number) {
   const dto = await DB.get('account', id)
-  return dto && buildAccount(dto)
+  return dto && AccountFactory.build(dto)
 }
