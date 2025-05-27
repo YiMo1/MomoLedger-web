@@ -34,7 +34,7 @@ const router = useRouter()
 function handleBillClick() {
   switch (props.bill.type) {
     case '转账': {
-      router.push(`edit_transfer_bill/${props.bill.id}`)
+      router.push(`/edit_transfer_bill/${props.bill.id}`)
       break
     }
     case '支出':
