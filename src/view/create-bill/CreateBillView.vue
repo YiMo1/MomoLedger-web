@@ -125,7 +125,7 @@ function onKeyboardInput(key: string) {
 const accountStore = useAccountStore()
 const fromAccount = ref<Account>()
 const toAccount = ref<Account>()
-const payAccount = ref([...accountStore.map.values()][0])
+const payAccount = ref(accountStore.list[0])
 const showAccountSelectPoper = ref(false)
 const status = ref<'pay' | 'to' | 'from'>('pay')
 function onAccountSelect(account: Account) {

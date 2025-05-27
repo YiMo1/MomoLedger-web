@@ -3,10 +3,10 @@ import { useAccountStore } from '@/store/account.ts'
 import HeaderComp from './Header.vue'
 import { formatMoney } from '@/utils/index.ts'
 
-const { map } = storeToRefs(useAccountStore())
+const { list } = storeToRefs(useAccountStore())
 
-const assetsAccount = computed(() => [...map.value.values()].filter((item) => item.type === '资产'))
-const creditAccount = computed(() => [...map.value.values()].filter((item) => item.type === '信贷'))
+const assetsAccount = computed(() => list.value.filter((item) => item.type === '资产'))
+const creditAccount = computed(() => list.value.filter((item) => item.type === '信贷'))
 const totalAssets = computed(() => assetsAccount.value.reduce((sum, item) => {
   sum += item.balance ?? 0
   return sum

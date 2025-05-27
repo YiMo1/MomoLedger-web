@@ -11,7 +11,7 @@ const name = ref('')
 const debt = ref(0)
 const limit = ref(0)
 const balance = ref(0)
-const note = ref('')
+const note = ref()
 
 const navTitle = computed(() => `编辑${name.value}账户`)
 

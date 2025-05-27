@@ -30,7 +30,7 @@ function onClick(account: Account) {
     <div class="p-4 font-bold">选择账户</div>
     <ul>
       <li
-        v-for="item in [...store.map.values()]"
+        v-for="item in store.list"
         :key="item.id"
         class="flex h-14 items-center justify-between px-4 py-3 active:bg-gray-100"
         @click="onClick(item)"

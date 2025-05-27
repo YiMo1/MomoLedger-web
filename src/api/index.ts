@@ -1,4 +1,8 @@
-import { type Account, AccountFactory, DB } from '@/database/index.ts'
+import { merge } from 'es-toolkit'
+
+import { type Account, type AccountDTO, AccountFactory, DB } from '@/database/index.ts'
+
+import type { DistributedOmit, SetRequired } from 'type-fest'
 
 export async function deleteAccount(id: number) {
   const transaction = DB.transaction(['bill', 'account'], 'readwrite')
@@ -54,4 +58,25 @@ export async function queryAllAccount() {
 export async function queryAccountById(id: number) {
   const dto = await DB.get('account', id)
   return dto && AccountFactory.build(dto)
+}
+
+export async function insertAccount(data: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
+  const transaction = DB.transaction('account', 'readwrite')
+  const store = transaction.objectStore('account')
+  const id = await store.add({} as any)
+  const dto = { ...data, id, createTime: Date.now() } satisfies AccountDTO
+  store.put(dto)
+  await transaction.done
+  return AccountFactory.build(dto)
+}
+
+export async function updateAccount(data: SetRequired<Partial<AccountDTO>, 'id'>) {
+  const transaction = DB.transaction('account', 'readwrite')
+  const store = transaction.objectStore('account')
+  const dto = await store.get(data.id)
+  if (!dto) { throw new Error(`更新账户异常----${JSON.stringify(data)}`) }
+  merge(dto, data)
+  store.put(dto)
+  await transaction.done
+  return AccountFactory.build(dto)
 }

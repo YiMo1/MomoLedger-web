@@ -1,55 +1,45 @@
-import { merge, pick } from 'es-toolkit'
-
-import { emitter } from '@/utils/index.ts'
 import {
-  type Account,
-  type AccountDTO,
-  AccountFactory,
-  DB,
-} from '../database/index.ts'
-import { deleteAccount as deleteAccountAPI } from '@/api/index.ts'
+  deleteAccount as deleteAccountAPI,
+  insertAccount,
+  queryAllAccount,
+  updateAccount as updateAccountAPI,
+} from '@/api/index.ts'
+import { useAssetsDataStore } from './assets-data.ts'
+import { useBillStore } from './bill.ts'
 
+import type { Account, AccountDTO } from '../database/index.ts'
 import type { DistributedOmit, SetRequired } from 'type-fest'
 
 export const useAccountStore = defineStore('account', () => {
-  const map = ref(new Map<Account['id'], Account>())
+  const list = ref<Account[]>([])
+  const map = computed(() => new Map(list.value.map((item) => [item.id, item])))
 
   async function loadAccounts() {
-    if (map.value.size > 0) { map.value.clear() }
-    const list = await DB.getAll('account')
-    for (const item of list) {
-      map.value.set(item.id, AccountFactory.build(item))
-    }
+    list.value = await queryAllAccount()
   }
 
-  async function createAccount(options: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
-    const transaction = DB.transaction('account', 'readwrite')
-    const store = transaction.objectStore('account')
-    const id = await store.add({} as any)
-    const account = AccountFactory.build({ ...options, id, createTime: Date.now() })
-    await store.put(account.serialize())
-    map.value.set(account.id, account)
-    emitter.emit('create-account')
-    return account
+  async function createAccount(data: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
+    const newAccount = await insertAccount(data)
+    list.value.push(newAccount)
+    useAssetsDataStore().reload()
+    return newAccount
   }
 
   async function deleteAccount(id: Account['id']) {
     await deleteAccountAPI(id)
-    await loadAccounts()
-    emitter.emit('delete-account')
+    const index = list.value.findIndex((item) => item.id === id)
+    if (index !== -1) list.value.splice(index, 1)
+    useAssetsDataStore().reload()
+    useBillStore().loadBill()
   }
 
-  function updateAccount(options: SetRequired<Partial<AccountDTO>, 'id' | 'type'>) {
-    const account = map.value.get(options.id)
-    if (!account) return
-    if (account.type === '信贷' && options.type === '信贷') {
-      merge(account, pick(options, ['name', 'debt', 'limit', 'note']))
-    }
-    if (account.type === '资产' && options.type === '资产') {
-      merge(account, pick(options, ['name', 'balance', 'note']))
-    }
-    return DB.put('account', account.serialize())
+  async function updateAccount(data: SetRequired<Partial<AccountDTO>, 'id' | 'type'>) {
+    const updated = await updateAccountAPI(data)
+    const index = list.value.findIndex((item) => item.id === data.id)
+    if (index !== -1) list.value.splice(index, 1, updated)
+    useAssetsDataStore().reload()
+    return updated
   }
 
-  return { map, createAccount, deleteAccount, updateAccount, loadAccounts }
+  return { list, map, createAccount, deleteAccount, updateAccount, loadAccounts }
 })

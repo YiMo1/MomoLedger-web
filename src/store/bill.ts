@@ -23,6 +23,7 @@ export const useBillStore = defineStore('bill', () => {
   const map = computed(() => new Map(list.value.map((bill) => [bill.id, bill])))
 
   async function loadBill() {
+    list.value = []
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
     const index = store.index('idx_billTime')
@@ -114,11 +115,6 @@ export const useBillStore = defineStore('bill', () => {
       return DB.put('bill', bill.structured())
     }
   }
-
-  emitter.on('delete-account', () => {
-    list.value = []
-    loadBill()
-  })
 
   return {
     createBill,

@@ -3,14 +3,14 @@ import AssetsDataHeader from './Header.vue'
 import { useAccountStore, useBillStore } from '@/store/index.ts'
 import { useBillGroup } from '@/hooks/index.ts'
 
-const { map: account } = storeToRefs(useAccountStore())
+const { list: account } = storeToRefs(useAccountStore())
 const { list: billList } = storeToRefs(useBillStore())
 const router = useRouter()
 
 const billGroup = useBillGroup(billList)
 
 function addNewRecord() {
-  if (account.value.size < 1) {
+  if (account.value.length < 1) {
     showFailToast('请先添加一个账户')
     return
   }
