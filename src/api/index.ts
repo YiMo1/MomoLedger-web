@@ -46,6 +46,11 @@ export async function deleteAccount(id: number) {
   return transaction.done
 }
 
+export async function queryAllAccount() {
+  const dto = await DB.getAll('account')
+  return dto.map((item) => AccountFactory.build(item))
+}
+
 export async function queryAccountById(id: number) {
   const dto = await DB.get('account', id)
   return dto && AccountFactory.build(dto)

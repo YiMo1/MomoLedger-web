@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { noop } from 'es-toolkit'
 
-import { useAccountStore, useBillStore } from '@/store/index.ts'
+import { useBillStore } from '@/store/index.ts'
 
 import type { Account, TransferBill } from '@/database/index.ts'
 
@@ -11,26 +10,20 @@ const route = useRoute()
 const router = useRouter()
 const bill = store.map.get(Number(route.params.id)) as TransferBill
 
-type Action = Vant.ActionSheetAction & { value: Account }
-const accountStore = useAccountStore()
 const fromAccount = ref(bill.paymentAccount)
 const toAccount = ref(bill.receivingAccount)
-const accountActionSheetShow = ref(false)
-const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
-  return { name: account.name, value: account }
-}))
-const onAccountSheetSelect = ref<(action: Action, index: number) => void>(noop)
-const ACCOUNT_SELECT_STRATEGY_MAP = {
-  FROM_ACCOUNT({ value }: Action) {
-    fromAccount.value = value
-  },
-  TO_ACCOUNT({ value }: Action) {
-    toAccount.value = value
-  },
-} as const
-function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_MAP) {
-  accountActionSheetShow.value = true
-  onAccountSheetSelect.value = ACCOUNT_SELECT_STRATEGY_MAP[strategy]
+const showAccountSelect = ref(false)
+const status = ref<'to' | 'from'>('from')
+function onAccountSelect(account: Account) {
+  switch (status.value) {
+    case 'from': { fromAccount.value = account; break }
+    case 'to': { toAccount.value = account; break }
+    default: { const _: never = status.value }
+  }
+}
+function openAccountSelect(metadata: 'to' | 'from') {
+  showAccountSelect.value = true
+  status.value = metadata
 }
 
 const amount = ref(bill.amount / 100)
@@ -116,14 +109,14 @@ async function deleteBill() {
           label="转出账户"
           readonly
           :model-value="fromAccount.name"
-          @click="openAccountActionSheet('FROM_ACCOUNT')" />
+          @click="openAccountSelect('from')" />
         <van-field
           input-align="right"
           class="after:hidden"
           label="转入账户"
           readonly
           :model-value="toAccount.name"
-          @click="openAccountActionSheet('TO_ACCOUNT')" />
+          @click="openAccountSelect('to')" />
       </van-cell-group>
       <van-cell-group inset>
         <van-field
@@ -177,14 +170,5 @@ async function deleteBill() {
     </van-picker-group>
   </van-popup>
 
-  <van-action-sheet
-    v-model:show="accountActionSheetShow"
-    :closeable="false"
-    title="选择账户"
-    style="--van-action-sheet-item-line-height: 30px"
-    :actions="accountActions"
-    safe-area-inset-bottom
-    close-on-click-action
-    teleport="body"
-    @select="onAccountSheetSelect" />
+  <account-select-popup v-model:show="showAccountSelect" @select="onAccountSelect" />
 </template>

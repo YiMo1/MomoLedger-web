@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { noop, pick } from 'es-toolkit'
+import { pick } from 'es-toolkit'
 import dayjs from 'dayjs'
 
 import { useAccountStore, useBillStore, useCategoryStore } from '@/store/index.ts'
@@ -122,30 +122,23 @@ function onKeyboardInput(key: string) {
 }
 
 // 账户选择
-type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
 const fromAccount = ref<Account>()
 const toAccount = ref<Account>()
 const payAccount = ref([...accountStore.map.values()][0])
-const accountActionSheetShow = ref(false)
-const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
-  return { name: account.name, value: account }
-}))
-const onAccountSheetSelect = ref<(action: Action, index: number) => void>(noop)
-const ACCOUNT_SELECT_STRATEGY_MAP = {
-  FROM_ACCOUNT({ value }: Action) {
-    fromAccount.value = value
-  },
-  TO_ACCOUNT({ value }: Action) {
-    toAccount.value = value
-  },
-  PAY_ACCOUNT({ value }: Action) {
-    payAccount.value = value
-  },
-} as const
-function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_MAP) {
-  accountActionSheetShow.value = true
-  onAccountSheetSelect.value = ACCOUNT_SELECT_STRATEGY_MAP[strategy]
+const showAccountSelectPoper = ref(false)
+const status = ref<'pay' | 'to' | 'from'>('pay')
+function onAccountSelect(account: Account) {
+  switch (status.value) {
+    case 'from': { fromAccount.value = account; break }
+    case 'to': { toAccount.value = account; break }
+    case 'pay': { payAccount.value = account; break }
+    default: { const _: never = status.value }
+  }
+}
+function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
+  showAccountSelectPoper.value = true
+  status.value = metadata
 }
 </script>
 
@@ -189,7 +182,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
             title="转出账户"
             icon="balance-pay"
             is-link
-            @click="openAccountActionSheet('FROM_ACCOUNT')" />
+            @click="openAccountSelectPoper('from')" />
           <div class="my-2 text-center">
             <van-icon name="sort" size="28px" />
           </div>
@@ -200,7 +193,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
             title="转入账户"
             icon="balance-pay"
             is-link
-            @click="openAccountActionSheet('TO_ACCOUNT')" />
+            @click="openAccountSelectPoper('to')" />
         </div>
       </van-tab>
     </van-tabs>
@@ -236,7 +229,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
       <div
         v-if="billType !== '转账'"
         class="flex h-12 items-center gap-1 px-4 leading-none"
-        @click="openAccountActionSheet('PAY_ACCOUNT')"
+        @click="openAccountSelectPoper('pay')"
       >
         <van-icon name="paid" size="22px" />
         <span>{{ payAccount.name }}</span>
@@ -285,16 +278,7 @@ function openAccountActionSheet(strategy: keyof typeof ACCOUNT_SELECT_STRATEGY_M
       size="large" />
   </van-action-sheet>
 
-  <van-action-sheet
-    v-model:show="accountActionSheetShow"
-    :closeable="false"
-    title="选择账户"
-    style="--van-action-sheet-item-line-height: 30px"
-    :actions="accountActions"
-    safe-area-inset-bottom
-    close-on-click-action
-    teleport="body"
-    @select="onAccountSheetSelect" />
+  <account-select-popup v-model:show="showAccountSelectPoper" @select="onAccountSelect" />
 
   <van-popup v-model:show="showPopup" destroy-on-close round position="bottom" teleport="body">
     <van-picker-group

@@ -40,32 +40,28 @@ function saveNote() {
 }
 
 // 账户选择
-type Action = Vant.ActionSheetAction & { value: Account }
 const accountStore = useAccountStore()
-const accountActionSheetShow = ref(false)
-const accountActions = computed(() => [...accountStore.map.values()].map<Action>((account) => {
-  return { name: account.name, value: account }
-}))
-function onAccountSheetSelect(action: Action) {
-  if (bill.account.id === action.value.id) return
+const showAccountSelect = ref(false)
+function onAccountSelect(action: Account) {
+  if (bill.account.id === action.id) return
   switch (bill.type) {
     case '支出': {
       bill.account.income(bill.amount)
       accountStore.updateAccount(bill.account.serialize())
-      action.value.expense(bill.amount)
-      accountStore.updateAccount(action.value.serialize())
+      action.expense(bill.amount)
+      accountStore.updateAccount(action.serialize())
       break
     }
     case '收入': {
       bill.account.expense(bill.amount)
       accountStore.updateAccount(bill.account.serialize())
-      action.value.income(bill.amount)
-      accountStore.updateAccount(action.value.serialize())
+      action.income(bill.amount)
+      accountStore.updateAccount(action.serialize())
       break
     }
     default: { const _: never = bill }
   }
-  bill.account = action.value
+  bill.account = action
   store.updateBill(bill)
 }
 
@@ -139,7 +135,7 @@ function onBillTimeConfirm(values: Vant.PickerConfirmEventParams[]) {
       title="收支账户"
       class="after:hidden"
       :value="bill.account.name"
-      @click="accountActionSheetShow = true" />
+      @click="showAccountSelect = true" />
     <van-field
       v-model="bill.note"
       type="textarea"
@@ -170,16 +166,7 @@ function onBillTimeConfirm(values: Vant.PickerConfirmEventParams[]) {
     </van-picker-group>
   </van-popup>
 
-  <van-action-sheet
-    v-model:show="accountActionSheetShow"
-    :closeable="false"
-    title="选择账户"
-    style="--van-action-sheet-item-line-height: 30px"
-    :actions="accountActions"
-    safe-area-inset-bottom
-    close-on-click-action
-    teleport="body"
-    @select="onAccountSheetSelect" />
+  <account-select-popup v-model:show="showAccountSelect" @select="onAccountSelect" />
 
   <van-action-sheet
     v-model:show="noteActionShow"
