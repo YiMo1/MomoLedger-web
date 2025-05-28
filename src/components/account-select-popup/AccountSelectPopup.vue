@@ -48,7 +48,7 @@ function onClick(account: Account) {
           <div class="text-xs/5 text-gray-400">可用：{{ formatMoney(item.limit - item.debt) }}</div>
         </div>
         <div
-          v-else-if="item.type === '资产'" :class="{
+          v-else-if="item.type === '资金'" :class="{
             'text-black': item.balance === 0,
             'text-red-500': item.balance < 0,
             'text-emerald-500': item.balance > 0,

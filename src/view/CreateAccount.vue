@@ -3,89 +3,119 @@ import { useAccountStore } from '@/store/account.ts'
 
 import type { Account } from '../database/index.ts'
 
-const router = useRouter()
-const route = useRoute()
-const store = useAccountStore()
+const props = defineProps<{ type: Account['type'] }>()
 
-const type = computed<Account['type']>(() => route.query.accountType === '信贷账户'
-  ? '信贷'
-  : '资产')
 const title = computed(() => {
-  switch (type.value) {
-    case '资产': return '新增资产账户'
+  switch (props.type) {
+    case '资金': return '新增资金账户'
     case '信贷': return '新增信贷账户'
-    default: { const _: never = type.value }
+    default: { const never: never = props.type; return never }
   }
 })
-const name = ref('')
-const balance = ref<number>()
-const note = ref('')
-const limit = ref<number>()
+
+const form = ref({
+  limit: '0.00',
+  debt: '0.00',
+  name: '',
+  note: '',
+  balance: '0.00',
+})
 
 const formRel = ref<Vant.FormInstance>()
-async function createAccount() {
-  try { await formRel.value?.validate() }
-  catch { return }
-
-  let options: Parameters<typeof store.createAccount>[0]
-  switch (type.value) {
+async function onSubmit() {
+  const { name, note, limit, balance, debt } = form.value
+  const { type } = props
+  switch (type) {
     case '信贷': {
-      options = {
-        name: name.value,
-        note: note.value,
-        type: '信贷',
-        limit: Math.round((limit.value ?? 0) * 100),
-        debt: Math.round((balance.value ?? 0) * 100),
-      }
+      await useAccountStore().createAccount({
+        name, type,
+        note: note || undefined,
+        debt: Math.round(Number(debt) * 100),
+        limit: Math.round(Number(limit) * 100),
+      })
       break
     }
-    case '资产': {
-      options = {
-        name: name.value,
-        note: note.value,
-        type: '资产',
-        balance: Math.round((balance.value ?? 0) * 100),
-      }
+    case '资金': {
+      await useAccountStore().createAccount({
+        name, type,
+        note: note || undefined,
+        balance: Math.round(Number(balance) * 100),
+      })
       break
     }
   }
+  useRouter().back()
+}
 
-  await store.createAccount(options)
-  router.back()
+function onFailed({ errors }: { errors: { message: string }[] }) {
+  showToast({ message: errors[0].message, position: 'top' })
 }
 </script>
 
 <template>
   <van-nav-bar
+    fixed
+    placeholder
+    safe-area-inset-top
     :title="title"
     left-text="取消"
     right-text="确定"
-    @click-left="router.back()"
-    @click-right="createAccount" />
-  <div class="py-4">
-    <van-form ref="formRel" label-width="2.6em">
+    @click-left="$router.back"
+    @click-right="formRel?.submit" />
+
+  <van-form
+    ref="formRel"
+    class="py-4"
+    style="--van-cell-group-inset-radius: 4px"
+    label-width="2.6em"
+    validate-trigger="onSubmit"
+    :show-error-message="false"
+    @submit="onSubmit"
+    @failed="onFailed"
+  >
+    <van-space direction="vertical" fill size="16px">
       <van-cell-group inset>
         <van-field
-          v-model="name"
+          v-model="form.name"
           label="名称"
-          placeholder="请输入账户名称"
-          :rules="[{ required: true, message: '请输入账户名称' }]" />
+          class="after:hidden"
+          placeholder="请输入名称"
+          :rules="[{ required: true, message: '请输入名称' }]" />
         <van-field
-          v-model.number="balance"
+          v-if="type === '资金'"
+          v-model="form.balance"
           label="余额"
+          class="after:hidden"
           type="number"
-          placeholder="请输入账户余额" />
+          placeholder="请输入余额"
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
         <van-field
-          v-model="note"
+          v-else-if="type === '信贷'"
+          v-model="form.debt"
+          label="欠款"
+          type="number"
+          class="after:hidden"
+          placeholder="请输入欠款"
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
+        <van-field
+          v-model="form.note"
           label="备注"
-          placeholder="请输入账户备注" />
-        <van-field
-          v-if="type === '信贷'"
-          v-model.number="limit"
-          label="额度"
-          type="number"
-          placeholder="请输入账户额度" />
+          class="after:hidden"
+          placeholder="请输入备注" />
       </van-cell-group>
-    </van-form>
-  </div>
+
+      <van-cell-group v-if="type === '信贷'" inset>
+        <van-field
+          v-model="form.limit"
+          label="总额度"
+          type="number"
+          is-link
+          label-width="4em"
+          input-align="right"
+          class="after:hidden active:bg-white"
+          placeholder="请输入额度"
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
+      </van-cell-group>
+    </van-space>
+  </van-form>
 </template>

@@ -14,7 +14,7 @@ defineProps<{ account: Account; secret: boolean; secretText?: string }>()
       :class="[
         'text-black',
         {
-          'text-emerald-500': account.type === '资产' && account.balance > 0,
+          'text-emerald-500': account.type === '资金' && account.balance > 0,
           'text-red-500': account.type === '信贷' || account.balance < 0,
         },
       ]"
@@ -23,7 +23,7 @@ defineProps<{ account: Account; secret: boolean; secretText?: string }>()
       <template v-else-if="account.type === '信贷'">
         {{ `-${formatMoney(account.debt)}` }}
       </template>
-      <template v-else-if="account.type === '资产'">
+      <template v-else-if="account.type === '资金'">
         {{ formatMoney(account.balance) }}
       </template>
     </div>

@@ -5,7 +5,7 @@ import { formatMoney } from '@/utils/index.ts'
 
 const { list } = storeToRefs(useAccountStore())
 
-const assetsAccount = computed(() => list.value.filter((item) => item.type === '资产'))
+const assetsAccount = computed(() => list.value.filter((item) => item.type === '资金'))
 const creditAccount = computed(() => list.value.filter((item) => item.type === '信贷'))
 const totalAssets = computed(() => assetsAccount.value.reduce((sum, item) => {
   sum += item.balance ?? 0
@@ -26,7 +26,7 @@ const secret = ref(false)
       <header-comp v-model:secret="secret" :secret-text="SECRET_TEXT" />
       <div v-if="assetsAccount.length > 0" class="mt-4 rounded bg-white">
         <div class="flex justify-between p-4 font-bold">
-          <div>资产账户</div>
+          <div>资金账户</div>
           <div>{{ secret ? SECRET_TEXT : formatMoney(totalAssets) }}</div>
         </div>
         <account-cell

@@ -14,7 +14,14 @@ export default createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: Home },
-    { path: '/create_account', component: CreateAccount },
+    {
+      path: '/account/create',
+      component: CreateAccount,
+      props(to) {
+        const type = to.query.type
+        return { type }
+      },
+    },
     { path: '/create_bill', component: CreateBill },
     {
       path: '/account/detail/:id',

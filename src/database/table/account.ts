@@ -20,7 +20,7 @@ abstract class BaseAccount {
 }
 
 export class AssetsAccount extends BaseAccount {
-  declare type: '资产'
+  declare type: '资金'
   declare balance: number
 
   expense(amount: number) { this.balance -= amount }
@@ -73,7 +73,7 @@ export class AccountFactory {
   static build(data: AccountDTO): Account {
     let account: Account
     switch (data.type) {
-      case '资产': { account = new AssetsAccount(); break }
+      case '资金': { account = new AssetsAccount(); break }
       case '信贷': { account = new CreditAccount(); break }
       default: { account = data }
     }

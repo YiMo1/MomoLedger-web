@@ -28,7 +28,7 @@ describe(deleteAccount.name, () => {
   })
 
   it('应删除付款账户并更新收款账户', async () => {
-    const paymentAccount = await DB.add('account', { balance: 1000, type: '资产' } as AccountDTO)
+    const paymentAccount = await DB.add('account', { balance: 1000, type: '资金' } as AccountDTO)
     const receivingAccount = await DB.add('account', { debt: 1000, type: '信贷' } as AccountDTO)
     const bid = await DB.add('bill', {
       type: '转账',

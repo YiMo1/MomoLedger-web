@@ -2,15 +2,18 @@
 import Wallet from './wallet/Index.vue'
 import Ledger from './ledger/Index.vue'
 
+import type { Account } from '@/database/index.ts'
+
 defineOptions({ name: 'HomeView' })
 
 const activeTabbar = useSessionStorage('active_tabbar', 0)
 
+type ActionSheetAction = Vant.ActionSheetAction & { value: Account['type'] }
 const show = ref(false)
 const actions = [
-  { name: '资产账户' },
-  { name: '信贷账户' },
-] satisfies Vant.ActionSheetAction[]
+  { name: '资金账户', value: '资金' },
+  { name: '信贷账户', value: '信贷' },
+] satisfies ActionSheetAction[]
 const router = useRouter()
 const ledgerRef = ref<InstanceType<typeof Ledger>>()
 const { width, height } = useWindowSize()
@@ -51,8 +54,8 @@ function onBubbleClick() {
     :actions="actions"
     close-on-click-action
     teleport="body"
-    @select="(item) => router.push({
-      path: '/create_account',
-      query: { accountType: item.name },
+    @select="(item: ActionSheetAction) => router.push({
+      path: '/account/create',
+      query: { type: item.value },
     })" />
 </template>

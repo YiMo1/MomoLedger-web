@@ -73,7 +73,7 @@ async function deleteAccount() {
   </van-nav-bar>
 
   <div class="m-4 rounded bg-emerald-600 p-4 text-white">
-    <template v-if="account?.type === '资产'">
+    <template v-if="account?.type === '资金'">
       <div>账户余额</div>
       <div class="text-xl font-bold">{{ formatMoney(account.balance) }}</div>
     </template>

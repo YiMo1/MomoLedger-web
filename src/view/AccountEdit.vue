@@ -24,7 +24,7 @@ onBeforeMount(() => {
       limit.value = account.limit / 100
       break
     }
-    case '资产': {
+    case '资金': {
       balance.value = account.balance / 100
       break
     }
@@ -50,12 +50,12 @@ async function submit() {
       }
       break
     }
-    case '资产': {
+    case '资金': {
       options = {
         id: account.id,
         name: name.value,
         note: note.value,
-        type: '资产',
+        type: '资金',
         balance: Math.round((balance.value ?? 0) * 100),
       }
       break
@@ -92,7 +92,7 @@ async function submit() {
         placeholder="请输入账户名称"
         :rules="[{ required: true, message: '请输入账户名称' }]" />
       <van-field
-        v-if="account.type === '资产'"
+        v-if="account.type === '资金'"
         v-model.number="balance"
         label="余额"
         type="number"
