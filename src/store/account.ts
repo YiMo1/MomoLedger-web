@@ -4,7 +4,7 @@ import {
   queryAllAccount,
   updateAccount as updateAccountAPI,
 } from '@/api/index.ts'
-import { useAssetsDataStore } from './assets-data.ts'
+import { useAssetsStore } from './assets.ts'
 import { useBillStore } from './bill.ts'
 
 import type { Account, AccountDTO } from '../database/index.ts'
@@ -21,7 +21,7 @@ export const useAccountStore = defineStore('account', () => {
   async function createAccount(data: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
     const newAccount = await insertAccount(data)
     list.value.push(newAccount)
-    useAssetsDataStore().reload()
+    useAssetsStore().refresh()
     return newAccount
   }
 
@@ -29,7 +29,7 @@ export const useAccountStore = defineStore('account', () => {
     await deleteAccountAPI(id)
     const index = list.value.findIndex((item) => item.id === id)
     if (index !== -1) list.value.splice(index, 1)
-    useAssetsDataStore().reload()
+    useAssetsStore().refresh()
     useBillStore().loadBill()
   }
 
@@ -37,7 +37,7 @@ export const useAccountStore = defineStore('account', () => {
     const updated = await updateAccountAPI(data)
     const index = list.value.findIndex((item) => item.id === data.id)
     if (index !== -1) list.value.splice(index, 1, updated)
-    useAssetsDataStore().reload()
+    useAssetsStore().refresh()
     return updated
   }
 

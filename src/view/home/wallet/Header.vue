@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useAssetsDataStore } from '@/store/assets-data.ts'
+import { useAssetsStore } from '@/store/assets'
 import { formatMoney } from '@/utils/index.ts'
 
 const secret = defineModel<boolean>('secret', { required: true })
 
 defineProps<{ secretText: string }>()
 
-const { data } = storeToRefs(useAssetsDataStore())
+const store = useAssetsStore()
 
 const show = ref(false)
 </script>
@@ -22,19 +22,19 @@ const show = ref(false)
           @click="secret = !secret" />
       </div>
       <div class="mt-5 text-xl font-bold text-emerald-500">
-        {{ secret ? secretText : formatMoney(data.netAssets) }}
+        {{ secret ? secretText : formatMoney(store.netAssets) }}
       </div>
     </div>
     <div class="flex-1">
       <div>
         <span class="mr-3 text-sm text-gray-600">总资产</span>
         <span class="font-bold text-gray-700">
-          {{ secret ? secretText : formatMoney(data.totalAssets) }}</span>
+          {{ secret ? secretText : formatMoney(store.totalAssets) }}</span>
       </div>
       <div class="mt-5">
         <span class="mr-3 text-sm text-gray-600">负资产</span>
         <span class="font-bold text-gray-700">
-          {{ secret ? secretText : formatMoney(data.negativeEquity) }}</span>
+          {{ secret ? secretText : formatMoney(store.negativeAssets) }}</span>
       </div>
     </div>
     <van-icon
@@ -53,7 +53,7 @@ const show = ref(false)
     <div class="w-4/5 rounded-md bg-white p-4">
       <div class="text-center text-lg font-bold">资产数据</div>
       <div class="mt-4">
-        <div>可使用资金：{{ formatMoney(data.totalAssets) }}</div>
+        <div>可使用资金：{{ formatMoney(store.totalAssets) }}</div>
       </div>
     </div>
   </van-overlay>

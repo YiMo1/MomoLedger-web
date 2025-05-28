@@ -11,7 +11,7 @@ import {
 } from '../database/index.ts'
 import { useCategoryStore } from './category.ts'
 import { useAccountStore } from './account.ts'
-import { emitter } from '@/utils/index.ts'
+import { useAssetsStore } from './assets.ts'
 
 import type { DistributedOmit, Except } from 'type-fest'
 
@@ -26,7 +26,7 @@ export const useBillStore = defineStore('bill', () => {
     list.value = []
     const transaction = DB.transaction('bill', 'readonly')
     const store = transaction.objectStore('bill')
-    const index = store.index('idx_billTime')
+    const index = store.index('billTime')
     let cursor = await index.openCursor(null, 'prev')
     while (cursor) {
       list.value.push(buildBill(cursor.value))
@@ -75,7 +75,7 @@ export const useBillStore = defineStore('bill', () => {
       false,
     )
     list.value.splice(index, 0, bill)
-    emitter.emit('create-bill')
+    useAssetsStore().refresh()
     return bill
   }
 
