@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-
+import { dayjs } from '@/utils/index.ts'
 import { useBillStore } from '@/store/index.ts'
 
 import type { Account, TransferBill } from '@/database/index.ts'

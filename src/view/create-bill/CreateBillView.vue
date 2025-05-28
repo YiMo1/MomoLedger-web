@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { pick } from 'es-toolkit'
-import dayjs from 'dayjs'
 
+import { dayjs } from '@/utils/index.ts'
 import { useAccountStore, useBillStore, useCategoryStore } from '@/store/index.ts'
 
 import type { Account, Bill } from '@/database/index.ts'

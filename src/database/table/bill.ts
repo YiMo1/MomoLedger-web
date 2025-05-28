@@ -1,5 +1,6 @@
-import dayjs from 'dayjs'
 import { pick } from 'es-toolkit'
+
+import { dayjs } from '@/utils/index.ts'
 
 import type { Account } from './account.ts'
 import type { Category } from '../index.ts'

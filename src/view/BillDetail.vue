@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-
+import { dayjs, formatMoney } from '@/utils/index.ts'
 import { useAccountStore, useBillStore } from '@/store/index.ts'
-import { formatMoney } from '@/utils/index.ts'
 
 import type { Account, ExpensesBill, IncomeBill } from '@/database/index.ts'
 

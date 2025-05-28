@@ -1,6 +1,6 @@
 import { merge } from 'es-toolkit'
-import dayjs from 'dayjs'
 
+import { dayjs } from '@/utils/index.ts'
 import { type Account, type AccountDTO, AccountFactory, DB } from '@/database/index.ts'
 
 import type { DistributedOmit, SetRequired } from 'type-fest'

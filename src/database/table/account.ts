@@ -1,5 +1,6 @@
 import { merge, pick } from 'es-toolkit'
-import dayjs from 'dayjs'
+
+import { dayjs } from '@/utils/index.ts'
 
 declare module 'idb' {
   interface DBSchema {

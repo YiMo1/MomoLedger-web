@@ -1,6 +1,6 @@
 import { sortedIndexBy } from 'es-toolkit/compat'
-import dayjs from 'dayjs'
 
+import { dayjs } from '@/utils/index.ts'
 import {
   type Bill,
   type BillDTO,
