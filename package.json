@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "pnpm check:ts && vite build",
-    "check:ts": "vue-tsc -b",
+    "build": "vite build",
+    "typecheck": "vue-tsc -b",
     "lint": "eslint --fix .",
     "test": "vitest",
     "prepare": "simple-git-hooks"
@@ -41,7 +41,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
-    "pre-push": "pnpm test"
+    "pre-push": "pnpm test && pnpm typecheck"
   },
   "lint-staged": {
     "*": "eslint --fix"
