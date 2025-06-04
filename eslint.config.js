@@ -1,4 +1,4 @@
 // @ts-check
 import { yimo } from 'eslint-config-yimo'
 
-export default yimo()
+export default yimo({ formatters: true })
