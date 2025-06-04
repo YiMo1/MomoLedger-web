@@ -1,9 +1,10 @@
+import type { DistributedOmit, SetRequired } from 'type-fest'
+
+import type { Account, AccountDTO } from '@/database/index.ts'
 import { merge } from 'es-toolkit'
+import { AccountFactory, DB } from '@/database/index.ts'
 
 import { dayjs } from '@/utils/index.ts'
-import { type Account, type AccountDTO, AccountFactory, DB } from '@/database/index.ts'
-
-import type { DistributedOmit, SetRequired } from 'type-fest'
 
 export async function deleteAccount(id: number) {
   const transaction = DB.transaction(['bill', 'account'], 'readwrite')
@@ -17,7 +18,7 @@ export async function deleteAccount(id: number) {
     switch (billDTO.type) {
       case '支出':
       case '收入': {
-        if (billDTO.account === id) { cursor.delete() }
+        if (billDTO.account === id) cursor.delete()
         break
       }
       case '转账': {
@@ -53,7 +54,7 @@ export async function deleteAccount(id: number) {
 
 export async function queryAllAccount() {
   const dto = await DB.getAll('account')
-  return dto.map((item) => AccountFactory.build(item))
+  return dto.map(item => AccountFactory.build(item))
 }
 
 export async function queryAccountById(id: number) {
@@ -75,7 +76,7 @@ export async function updateAccount(data: SetRequired<Partial<AccountDTO>, 'id'>
   const transaction = DB.transaction('account', 'readwrite')
   const store = transaction.objectStore('account')
   const dto = await store.get(data.id)
-  if (!dto) { throw new Error(`更新账户异常----${JSON.stringify(data)}`) }
+  if (!dto) throw new Error(`更新账户异常----${JSON.stringify(data)}`)
   merge(dto, data)
   store.put(dto)
   await transaction.done
@@ -135,8 +136,8 @@ export async function queryAssetsData() {
     while (cursor) {
       const value = cursor.value
       switch (value.type) {
-        case '信贷': { data.negativeAssets += value.debt; break }
-        case '资产': { data.totalAssets += value.balance; break }
+        case '信贷': data.negativeAssets += value.debt; break
+        case '资金': data.totalAssets += value.balance; break
         default: { const _: never = value }
       }
       cursor = await cursor.continue()
@@ -162,9 +163,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { data.thisMonthExpense += value.amount; break }
-          case '收入': { data.thisMonthIncome += value.amount; break }
-          case '转账': { break }
+          case '支出': data.thisMonthExpense += value.amount; break
+          case '收入': data.thisMonthIncome += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
@@ -177,9 +178,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { data.thisWeekExpense += value.amount; break }
-          case '收入': { data.thisWeekIncome += value.amount; break }
-          case '转账': { break }
+          case '支出': data.thisWeekExpense += value.amount; break
+          case '收入': data.thisWeekIncome += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
@@ -192,9 +193,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { data.thisYearExpense += value.amount; break }
-          case '收入': { data.thisYearIncome += value.amount; break }
-          case '转账': { break }
+          case '支出': data.thisYearExpense += value.amount; break
+          case '收入': data.thisYearIncome += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
@@ -207,9 +208,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { data.totalExpense += value.amount; break }
-          case '收入': { data.totalIncome += value.amount; break }
-          case '转账': { break }
+          case '支出': data.totalExpense += value.amount; break
+          case '收入': data.totalIncome += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
@@ -222,9 +223,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { data.todayExpense += value.amount; break }
-          case '收入': { data.todayIncome += value.amount; break }
-          case '转账': { break }
+          case '支出': data.todayExpense += value.amount; break
+          case '收入': data.todayIncome += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
@@ -239,9 +240,9 @@ export async function queryAssetsData() {
       while (cursor) {
         const value = cursor.value
         switch (value.type) {
-          case '支出': { expense += value.amount; break }
-          case '收入': { income += value.amount; break }
-          case '转账': { break }
+          case '支出': expense += value.amount; break
+          case '收入': income += value.amount; break
+          case '转账': break
           default: { const _: never = value }
         }
         cursor = await cursor.continue()
