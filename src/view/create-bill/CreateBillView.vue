@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { pick } from 'es-toolkit'
 
-import { dayjs } from '@/utils/index.ts'
 import { useAccountStore, useBillStore, useCategoryStore } from '@/store/index.ts'
+import { dayjs } from '@/utils/index.ts'
 
 import type { Account, Bill } from '@/database/index.ts'
 
@@ -12,11 +12,11 @@ const billType = ref<Bill['type']>('支出')
 // 类别
 const { list: categoryList } = storeToRefs(useCategoryStore())
 const expensesCategoryList = computed(() => {
-  const category = categoryList.value.find((item) => item.text === '支出' && !item.parent)
+  const category = categoryList.value.find(item => item.text === '支出' && !item.parent)
   return category?.children ?? []
 })
 const incomeCategoryList = computed(() => {
-  const category = categoryList.value.find((item) => item.text === '收入' && !item.parent)
+  const category = categoryList.value.find(item => item.text === '收入' && !item.parent)
   return category?.children ?? []
 })
 const expensesCategory = ref([expensesCategoryList.value[0]])
@@ -154,7 +154,9 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
         <van-tabs v-model:active="billType">
           <van-tab v-for="type in types" :key="type" :name="type">
             <template #title>
-              <div class="px-4">{{ type }}</div>
+              <div class="px-4">
+                {{ type }}
+              </div>
             </template>
           </van-tab>
         </van-tabs>
@@ -182,7 +184,8 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
             title="转出账户"
             icon="balance-pay"
             is-link
-            @click="openAccountSelectPoper('from')" />
+            @click="openAccountSelectPoper('from')"
+          />
           <div class="my-2 text-center">
             <van-icon name="sort" size="28px" />
           </div>
@@ -193,7 +196,8 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
             title="转入账户"
             icon="balance-pay"
             is-link
-            @click="openAccountSelectPoper('to')" />
+            @click="openAccountSelectPoper('to')"
+          />
         </div>
       </van-tab>
     </van-tabs>
@@ -208,13 +212,11 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
     >
       <template #extra>
         <div
-          :class="[
-            'max-w-[50%] overflow-hidden text-ellipsis text-xl font-bold',
-            {
-              'text-emerald-600': billType === '收入',
-              'text-red-500': billType === '支出',
-            },
-          ]"
+          class="max-w-[50%] overflow-hidden text-ellipsis text-xl font-bold"
+          :class="{
+            'text-emerald-600': billType === '收入',
+            'text-red-500': billType === '支出',
+          }"
         >
           {{ amount || '0.00' }}
         </div>
@@ -259,7 +261,8 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
       :close-button-text="amount ? '完成' : '取消'"
       @input="onKeyboardInput"
       @delete="amount = amount.slice(0, -1)"
-      @close="amount ? submit() : router.back()" />
+      @close="amount ? submit() : router.back()"
+    />
   </div>
 
   <van-action-sheet
@@ -275,7 +278,8 @@ function openAccountSelectPoper(metadata: 'pay' | 'to' | 'from') {
       type="number"
       :placeholder="`请输入${billType === '转账' ? '手续费' : '优惠金额'}`"
       clearable
-      size="large" />
+      size="large"
+    />
   </van-action-sheet>
 
   <account-select-popup v-model:show="showAccountSelectPoper" @select="onAccountSelect" />

@@ -6,11 +6,10 @@ import type { Account } from '../database/index.ts'
 const props = defineProps<{ type: Account['type'] }>()
 
 const title = computed(() => {
-  switch (props.type) {
-    case '资金': return '新增资金账户'
-    case '信贷': return '新增信贷账户'
-    default: { const never: never = props.type; return never }
-  }
+  if (props.type === '信贷') return '新增信贷账户'
+  if (props.type === '资金') return '新增资金账户'
+  const never: never = props.type
+  return never
 })
 
 const form = ref({
@@ -21,6 +20,8 @@ const form = ref({
   balance: '0.00',
 })
 
+const router = useRouter()
+
 const formRel = ref<Vant.FormInstance>()
 async function onSubmit() {
   const { name, note, limit, balance, debt } = form.value
@@ -28,7 +29,8 @@ async function onSubmit() {
   switch (type) {
     case '信贷': {
       await useAccountStore().createAccount({
-        name, type,
+        name,
+        type,
         note: note || undefined,
         debt: Math.round(Number(debt) * 100),
         limit: Math.round(Number(limit) * 100),
@@ -37,14 +39,15 @@ async function onSubmit() {
     }
     case '资金': {
       await useAccountStore().createAccount({
-        name, type,
+        name,
+        type,
         note: note || undefined,
         balance: Math.round(Number(balance) * 100),
       })
       break
     }
   }
-  useRouter().back()
+  router.back()
 }
 
 function onFailed({ errors }: { errors: { message: string }[] }) {
@@ -61,7 +64,8 @@ function onFailed({ errors }: { errors: { message: string }[] }) {
     left-text="取消"
     right-text="确定"
     @click-left="$router.back"
-    @click-right="formRel?.submit" />
+    @click-right="formRel?.submit"
+  />
 
   <van-form
     ref="formRel"
@@ -80,7 +84,8 @@ function onFailed({ errors }: { errors: { message: string }[] }) {
           label="名称"
           class="after:hidden"
           placeholder="请输入名称"
-          :rules="[{ required: true, message: '请输入名称' }]" />
+          :rules="[{ required: true, message: '请输入名称' }]"
+        />
         <van-field
           v-if="type === '资金'"
           v-model="form.balance"
@@ -88,7 +93,8 @@ function onFailed({ errors }: { errors: { message: string }[] }) {
           class="after:hidden"
           type="number"
           placeholder="请输入余额"
-          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()"
+        />
         <van-field
           v-else-if="type === '信贷'"
           v-model="form.debt"
@@ -96,12 +102,14 @@ function onFailed({ errors }: { errors: { message: string }[] }) {
           type="number"
           class="after:hidden"
           placeholder="请输入欠款"
-          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()"
+        />
         <van-field
           v-model="form.note"
           label="备注"
           class="after:hidden"
-          placeholder="请输入备注" />
+          placeholder="请输入备注"
+        />
       </van-cell-group>
 
       <van-cell-group v-if="type === '信贷'" inset>
@@ -114,7 +122,8 @@ function onFailed({ errors }: { errors: { message: string }[] }) {
           input-align="right"
           class="after:hidden active:bg-white"
           placeholder="请输入额度"
-          @focus="(event: Event) => (event.target as HTMLInputElement).select()" />
+          @focus="(event: Event) => (event.target as HTMLInputElement).select()"
+        />
       </van-cell-group>
     </van-space>
   </van-form>

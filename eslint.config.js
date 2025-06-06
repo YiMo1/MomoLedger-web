@@ -16,5 +16,6 @@ export default yimo({
       ],
       type: 'natural',
     }],
+    'ts/no-use-before-define': 'off',
   },
 })
