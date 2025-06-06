@@ -1,8 +1,9 @@
-import { type DBSchema, type IDBPDatabase, type StoreNames, deleteDB, openDB } from 'idb'
+import { deleteDB, openDB } from 'idb'
 
 import { category } from './init-data/v1.ts'
 
 import type { BillDTO, CategoryDTO } from './table/index.ts'
+import type { DBSchema, IDBPDatabase, StoreNames } from 'idb'
 
 export * from './table/index.ts'
 
@@ -45,8 +46,8 @@ async function initDB() {
   return DB
 }
 
-function open() {
-  return openDB<Database>(DB_NAME, DB_VERSION, { upgrade: upgradeDB })
+export function open() {
+  return openDB<Database>(DB_NAME, DB_VERSION, { upgrade })
 }
 
 export interface Database extends DBSchema {
@@ -57,10 +58,10 @@ export interface Database extends DBSchema {
       billTime: BillDTO['billTime']
     }
   }
-  category: { key: CategoryDTO['id']; value: CategoryDTO }
+  category: { key: CategoryDTO['id'], value: CategoryDTO }
 }
 
-function upgradeDB(database: IDBPDatabase<Database>) {
+function upgrade(database: IDBPDatabase<Database>) {
   database.createObjectStore('account', { keyPath: 'id', autoIncrement: true })
 
   const ledgerRecordStore = database.createObjectStore(

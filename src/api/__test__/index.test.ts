@@ -1,11 +1,17 @@
 import 'fake-indexeddb/auto'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { type AccountDTO, type BillDTO, type CreditAccount, DB } from '@/database/index.ts'
 import { deleteAccount } from '../index.ts'
+import { open } from '@/database/index.ts'
 
-afterEach(async () => {
+import type { AccountDTO, BillDTO, CreditAccount, Database } from '@/database/index.ts'
+import type { IDBPDatabase } from 'idb'
+
+let DB: IDBPDatabase<Database>
+
+beforeEach(async () => {
   vi.stubGlobal('indexedDB', new IDBFactory())
+  DB = await open()
 })
 
 describe(deleteAccount.name, () => {

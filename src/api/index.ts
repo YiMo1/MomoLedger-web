@@ -1,12 +1,13 @@
-import type { DistributedOmit, SetRequired } from 'type-fest'
-
-import type { Account, AccountDTO } from '@/database/index.ts'
 import { merge } from 'es-toolkit'
-import { AccountFactory, DB } from '@/database/index.ts'
 
+import { AccountFactory, open } from '@/database/index.ts'
 import { dayjs } from '@/utils/index.ts'
 
+import type { Account, AccountDTO } from '@/database/index.ts'
+import type { DistributedOmit, SetRequired } from 'type-fest'
+
 export async function deleteAccount(id: number) {
+  const DB = await open()
   const transaction = DB.transaction(['bill', 'account'], 'readwrite')
   const accountStore = transaction.objectStore('account')
   const billStore = transaction.objectStore('bill')
@@ -53,16 +54,19 @@ export async function deleteAccount(id: number) {
 }
 
 export async function queryAllAccount() {
+  const DB = await open()
   const dto = await DB.getAll('account')
   return dto.map(item => AccountFactory.build(item))
 }
 
 export async function queryAccountById(id: number) {
+  const DB = await open()
   const dto = await DB.get('account', id)
   return dto && AccountFactory.build(dto)
 }
 
 export async function insertAccount(data: DistributedOmit<AccountDTO, 'id' | 'createTime'>) {
+  const DB = await open()
   const transaction = DB.transaction('account', 'readwrite')
   const store = transaction.objectStore('account')
   const id = await store.add({} as any)
@@ -73,6 +77,7 @@ export async function insertAccount(data: DistributedOmit<AccountDTO, 'id' | 'cr
 }
 
 export async function updateAccount(data: SetRequired<Partial<AccountDTO>, 'id'>) {
+  const DB = await open()
   const transaction = DB.transaction('account', 'readwrite')
   const store = transaction.objectStore('account')
   const dto = await store.get(data.id)
@@ -85,6 +90,7 @@ export async function updateAccount(data: SetRequired<Partial<AccountDTO>, 'id'>
 
 export type AssetsData = Awaited<ReturnType<typeof queryAssetsData>>
 export async function queryAssetsData() {
+  const DB = await open()
   const data = {
     /** 本月支出 */
     thisMonthExpense: 0,
